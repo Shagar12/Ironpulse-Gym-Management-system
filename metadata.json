@@ -1,0 +1,6 @@
+{
+  "name": "IronPulse",
+  "description": "Comprehensive gym management system featuring member tracking, automated billing subscriptions, intelligent class scheduling, and dual staff/member portals.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
