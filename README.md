@@ -53,6 +53,14 @@ Then on Vercel:
   - Dynamic live counter simulating download telemetry
 
 - **Android Mobile Application (`/app`)**:
+  - **Universal OS Compatibility**:
+    - **Min SDK**: API 23 (Android 6.0 Marshmallow) — works on older devices
+    - **Target SDK**: API 36 (Android 16 / latest) — fully optimized for modern Android
+    - **MultiDex Enabled**: prevents method limit issues on older OS releases
+    - **Vector Drawables Support**: crisp vector rendering across all API levels
+    - **Predictive Back Gesture Support**: `enableOnBackInvokedCallback="true"` for Android 13+
+    - **Hardware Acceleration**: enabled for high-frame-rate rendering on all hardware tiers
+    - **Adaptive Insets & Edge-to-Edge**: proper WindowInsets handling avoiding camera cutouts & gesture pill overlap
   - Member tracking, billing & subscription management
   - Automated class scheduling & coach roster approvals
   - Workout & PR activity logger

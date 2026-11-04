@@ -43,8 +43,12 @@ fun IronPulseTheme(
         SideEffect {
             val window = (view.context as? Activity)?.window
             window?.let {
-                it.statusBarColor = GymDarkBg.toArgb()
-                it.navigationBarColor = GymDarkBg.toArgb()
+                if (android.os.Build.VERSION.SDK_INT < 35) {
+                    @Suppress("DEPRECATION")
+                    it.statusBarColor = GymDarkBg.toArgb()
+                    @Suppress("DEPRECATION")
+                    it.navigationBarColor = GymDarkBg.toArgb()
+                }
                 WindowCompat.getInsetsController(it, view).isAppearanceLightStatusBars = false
                 WindowCompat.getInsetsController(it, view).isAppearanceLightNavigationBars = false
             }

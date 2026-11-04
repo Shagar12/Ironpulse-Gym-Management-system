@@ -14,10 +14,13 @@ android {
 
   defaultConfig {
     applicationId = "com.aistudio.gympulse.rkpmyt"
-    minSdk = 24
+    minSdk = 23
     targetSdk = 36
     versionCode = 1
     versionName = "1.0"
+
+    multiDexEnabled = true
+    vectorDrawables.useSupportLibrary = true
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
