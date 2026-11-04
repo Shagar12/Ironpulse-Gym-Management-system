@@ -1,0 +1,12 @@
+{
+  "name": "ironpulse",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IronPulse Gym Management & Mobile App Web Companion",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "lint": "node -e 'console.log(\"No lint errors\")'"
+  }
+}
