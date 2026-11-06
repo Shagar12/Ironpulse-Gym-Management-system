@@ -32,16 +32,15 @@ enum class UserRole {
 enum class CoachTab {
     ROSTER,
     PROTOCOL,
-    CLASSES,
+    WORKOUTS,
     BILLING,
     AUDIT
 }
 
 enum class MemberTab {
     HOME,
-    DIET,
     WORKOUT,
-    CLASSES,
+    DIET,
     ANALYTICS,
     PASS
 }
@@ -116,6 +115,15 @@ class GymViewModel(private val repository: GymRepository) : ViewModel() {
 
     private val _showLogWorkoutActivityDialog = MutableStateFlow(false)
     val showLogWorkoutActivityDialog: StateFlow<Boolean> = _showLogWorkoutActivityDialog.asStateFlow()
+
+    private val _showEditProfileDialog = MutableStateFlow(false)
+    val showEditProfileDialog: StateFlow<Boolean> = _showEditProfileDialog.asStateFlow()
+
+    private val _showAssignWorkoutDialog = MutableStateFlow(false)
+    val showAssignWorkoutDialog: StateFlow<Boolean> = _showAssignWorkoutDialog.asStateFlow()
+
+    private val _showAiMealAnalyzerDialog = MutableStateFlow(false)
+    val showAiMealAnalyzerDialog: StateFlow<Boolean> = _showAiMealAnalyzerDialog.asStateFlow()
 
     // Toast/Snackbar notice
     private val _statusMessage = MutableStateFlow<String?>(null)
@@ -226,6 +234,79 @@ class GymViewModel(private val repository: GymRepository) : ViewModel() {
     fun setShowAddMealDialog(show: Boolean) { _showAddMealDialog.value = show }
     fun setShowAddExerciseDialog(show: Boolean) { _showAddExerciseDialog.value = show }
     fun setShowLogWorkoutActivityDialog(show: Boolean) { _showLogWorkoutActivityDialog.value = show }
+    fun setShowEditProfileDialog(show: Boolean) { _showEditProfileDialog.value = show }
+    fun setShowAssignWorkoutDialog(show: Boolean) { _showAssignWorkoutDialog.value = show }
+    fun setShowAiMealAnalyzerDialog(show: Boolean) { _showAiMealAnalyzerDialog.value = show }
+
+    fun addWater(memberId: String, amountMl: Int) {
+        viewModelScope.launch {
+            val member = members.value.find { it.id == memberId } ?: return@launch
+            val newWater = (member.waterIntakeMl + amountMl).coerceAtLeast(0)
+            repository.updateWaterIntake(memberId, newWater)
+            _statusMessage.value = "Hydration logged: +${amountMl}ml ($newWater / 3000 ml)"
+        }
+    }
+
+    fun resetWater(memberId: String) {
+        viewModelScope.launch {
+            repository.updateWaterIntake(memberId, 0)
+            _statusMessage.value = "Daily water tracker reset to 0 ml."
+        }
+    }
+
+    fun updateMemberProfile(
+        memberId: String,
+        name: String,
+        weight: Double,
+        height: Double,
+        goalPhase: String,
+        challengeLevel: String
+    ) {
+        viewModelScope.launch {
+            repository.updateMemberProfile(memberId, name, weight, height, goalPhase, challengeLevel)
+            if (_authUser.value?.id == memberId) {
+                _authUser.value = _authUser.value?.copy(
+                    name = name,
+                    currentWeight = weight,
+                    heightCm = height,
+                    goalPhase = goalPhase,
+                    challengeLevel = challengeLevel
+                )
+            }
+            _showEditProfileDialog.value = false
+            _statusMessage.value = "Profile updated: $name ($goalPhase, ${weight}kg)"
+        }
+    }
+
+    fun assignWorkout(
+        memberId: String,
+        exercise: String,
+        sets: String,
+        reps: String,
+        weight: String,
+        muscleGroup: String
+    ) {
+        viewModelScope.launch {
+            repository.assignWorkoutToMember(memberId, exercise, sets, reps, weight, muscleGroup)
+            _showAssignWorkoutDialog.value = false
+            _statusMessage.value = "Daily workout assigned: $exercise ($muscleGroup)"
+        }
+    }
+
+    fun sendAiAnalyzedMeals(
+        memberId: String,
+        meals: List<MealEntity>,
+        calories: Int,
+        protein: Int,
+        carbs: Int,
+        fat: Int
+    ) {
+        viewModelScope.launch {
+            repository.sendAiAnalyzedMeals(memberId, meals, calories, protein, carbs, fat)
+            _showAiMealAnalyzerDialog.value = false
+            _statusMessage.value = "Prescribed AI meal plan sent to athlete ($calories kcal, ${protein}g protein)!"
+        }
+    }
 
     fun dismissStatusMessage() { _statusMessage.value = null }
 

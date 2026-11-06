@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.FitnessCenter
@@ -59,6 +60,9 @@ import com.example.ui.dialogs.AddClassDialog
 import com.example.ui.dialogs.AddExerciseDialog
 import com.example.ui.dialogs.AddMealDialog
 import com.example.ui.dialogs.AddMemberDialog
+import com.example.ui.dialogs.AssignWorkoutDialog
+import com.example.ui.dialogs.CoachAiMealAnalyzerDialog
+import com.example.ui.dialogs.EditProfileDialog
 import com.example.ui.dialogs.LogWeightDialog
 import com.example.ui.dialogs.LogWorkoutActivityDialog
 import com.example.ui.dialogs.SmartProtocolDialog
@@ -68,6 +72,7 @@ import com.example.ui.screens.coach.CoachAuditScreen
 import com.example.ui.screens.coach.CoachBillingScreen
 import com.example.ui.screens.coach.CoachProtocolScreen
 import com.example.ui.screens.coach.CoachRosterScreen
+import com.example.ui.screens.coach.CoachWorkoutsScreen
 import com.example.ui.screens.member.MemberAnalyticsScreen
 import com.example.ui.screens.member.MemberDietScreen
 import com.example.ui.screens.member.MemberHomeScreen
@@ -151,6 +156,9 @@ fun IronPulseApp(viewModel: GymViewModel) {
     val showWeightLogDialog by viewModel.showWeightLogDialog.collectAsStateWithLifecycle()
     val showAddMealDialog by viewModel.showAddMealDialog.collectAsStateWithLifecycle()
     val showAddExerciseDialog by viewModel.showAddExerciseDialog.collectAsStateWithLifecycle()
+    val showEditProfileDialog by viewModel.showEditProfileDialog.collectAsStateWithLifecycle()
+    val showAssignWorkoutDialog by viewModel.showAssignWorkoutDialog.collectAsStateWithLifecycle()
+    val showAiMealAnalyzerDialog by viewModel.showAiMealAnalyzerDialog.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val statusMessage by viewModel.statusMessage.collectAsStateWithLifecycle()
@@ -206,6 +214,9 @@ fun IronPulseApp(viewModel: GymViewModel) {
                 },
                 onSelectActiveMember = { id ->
                     viewModel.setActiveMemberId(id)
+                },
+                onOpenEditProfile = {
+                    viewModel.setShowEditProfileDialog(true)
                 },
                 onSignOut = {
                     viewModel.signOut()
@@ -267,24 +278,22 @@ fun IronPulseApp(viewModel: GymViewModel) {
                             onDeleteWorkout = { viewModel.deleteWorkout(it) },
                             onOpenAddMeal = { viewModel.setShowAddMealDialog(true) },
                             onOpenAddWorkout = { viewModel.setShowAddExerciseDialog(true) },
-                            onOpenAiGen = { viewModel.setShowAiGeneratorDialog(true) }
+                            onOpenAiGen = { viewModel.setShowAiGeneratorDialog(true) },
+                            onOpenAiMealAnalyzer = { viewModel.setShowAiMealAnalyzerDialog(true) },
+                            onOpenAssignWorkout = { viewModel.setShowAssignWorkoutDialog(true) },
+                            onOpenEditProfile = { viewModel.setShowEditProfileDialog(true) }
                         )
                     }
-                    CoachTab.CLASSES -> {
-                        ClassScheduleScreen(
-                            userRole = UserRole.COACH,
-                            classes = classes,
-                            allMembers = members,
-                            activeMemberId = activeMemberId,
-                            selectedDay = classDayFilter,
-                            selectedCategory = classCategoryFilter,
-                            onDaySelect = { viewModel.setClassDayFilter(it) },
-                            onCategorySelect = { viewModel.setClassCategoryFilter(it) },
-                            onBookClass = { classId -> viewModel.bookClass(classId, activeMemberId) },
-                            onCancelBooking = { classId -> viewModel.cancelClassBooking(classId, activeMemberId) },
-                            onAutoBookRecommended = { viewModel.autoBookMatchingClasses(activeMemberId) },
-                            onRegenerateAutomatedSchedule = { viewModel.regenerateAutomatedWeeklySchedule() },
-                            onOpenAddClass = { viewModel.setShowAddClassDialog(true) }
+                    CoachTab.WORKOUTS -> {
+                        CoachWorkoutsScreen(
+                            members = members,
+                            selectedMember = selectedMember,
+                            workouts = selectedWorkouts,
+                            onSelectMember = { id ->
+                                viewModel.setSelectedMemberId(id)
+                            },
+                            onOpenAssignWorkout = { viewModel.setShowAssignWorkoutDialog(true) },
+                            onDeleteWorkout = { viewModel.deleteWorkout(it) }
                         )
                     }
                     CoachTab.BILLING -> {
@@ -309,19 +318,15 @@ fun IronPulseApp(viewModel: GymViewModel) {
                             workouts = activeWorkouts,
                             onToggleCheckIn = { activeMember?.let { viewModel.toggleGymPresence(it.id) } },
                             onLogWeight = { w -> activeMember?.let { viewModel.logDailyWeight(it.id, w) } },
+                            onAddWater = { amount -> activeMember?.let { viewModel.addWater(it.id, amount) } },
+                            onResetWater = { activeMember?.let { viewModel.resetWater(it.id) } },
+                            onOpenEditProfile = { viewModel.setShowEditProfileDialog(true) },
                             onRenewSubscription = { plan, amount ->
                                 activeMember?.let { viewModel.renewSubscription(it.id, plan, amount) }
                             },
                             onNavigateToDiet = { viewModel.setMemberTab(MemberTab.DIET) },
                             onNavigateToWorkout = { viewModel.setMemberTab(MemberTab.WORKOUT) },
-                            onNavigateToClasses = { viewModel.setMemberTab(MemberTab.CLASSES) }
-                        )
-                    }
-                    MemberTab.DIET -> {
-                        MemberDietScreen(
-                            member = activeMember,
-                            meals = activeMeals,
-                            onToggleMeal = { viewModel.toggleMeal(it) }
+                            onNavigateToClasses = { viewModel.setMemberTab(MemberTab.WORKOUT) }
                         )
                     }
                     MemberTab.WORKOUT -> {
@@ -335,21 +340,11 @@ fun IronPulseApp(viewModel: GymViewModel) {
                             onDeleteLog = { viewModel.deleteProgressLog(it) }
                         )
                     }
-                    MemberTab.CLASSES -> {
-                        ClassScheduleScreen(
-                            userRole = UserRole.MEMBER,
-                            classes = classes,
-                            allMembers = members,
-                            activeMemberId = activeMemberId,
-                            selectedDay = classDayFilter,
-                            selectedCategory = classCategoryFilter,
-                            onDaySelect = { viewModel.setClassDayFilter(it) },
-                            onCategorySelect = { viewModel.setClassCategoryFilter(it) },
-                            onBookClass = { classId -> viewModel.bookClass(classId, activeMemberId) },
-                            onCancelBooking = { classId -> viewModel.cancelClassBooking(classId, activeMemberId) },
-                            onAutoBookRecommended = { viewModel.autoBookMatchingClasses(activeMemberId) },
-                            onRegenerateAutomatedSchedule = { viewModel.regenerateAutomatedWeeklySchedule() },
-                            onOpenAddClass = { viewModel.setShowAddClassDialog(true) }
+                    MemberTab.DIET -> {
+                        MemberDietScreen(
+                            member = activeMember,
+                            meals = activeMeals,
+                            onToggleMeal = { viewModel.toggleMeal(it) }
                         )
                     }
                     MemberTab.ANALYTICS -> {
@@ -443,6 +438,54 @@ fun IronPulseApp(viewModel: GymViewModel) {
             }
         )
     }
+
+    if (showEditProfileDialog) {
+        val target = if (currentRole == UserRole.COACH) selectedMember else activeMember
+        if (target != null) {
+            EditProfileDialog(
+                initialName = target.name,
+                initialWeight = target.currentWeight,
+                initialHeight = target.heightCm,
+                initialGoalPhase = target.goalPhase,
+                initialChallengeLevel = target.challengeLevel,
+                onDismiss = { viewModel.setShowEditProfileDialog(false) },
+                onConfirm = { name, weight, height, phase, level ->
+                    viewModel.updateMemberProfile(target.id, name, weight, height, phase, level)
+                }
+            )
+        }
+    }
+
+    if (showAssignWorkoutDialog) {
+        val target = if (currentRole == UserRole.COACH) selectedMember else activeMember
+        if (target != null) {
+            AssignWorkoutDialog(
+                athleteName = target.name,
+                onDismiss = { viewModel.setShowAssignWorkoutDialog(false) },
+                onConfirm = { exercise, sets, reps, weight, muscleGroup ->
+                    viewModel.assignWorkout(target.id, exercise, sets, reps, weight, muscleGroup)
+                }
+            )
+        }
+    }
+
+    if (showAiMealAnalyzerDialog) {
+        val target = if (currentRole == UserRole.COACH) selectedMember else activeMember
+        if (target != null) {
+            CoachAiMealAnalyzerDialog(
+                athleteName = target.name,
+                athleteAge = target.age,
+                athleteGender = target.gender,
+                athleteWeight = target.currentWeight,
+                athleteHeight = target.heightCm,
+                athleteGoalPhase = target.goalPhase,
+                onDismiss = { viewModel.setShowAiMealAnalyzerDialog(false) },
+                onSendMealsToClient = { meals, cal, prot, carb, fat ->
+                    viewModel.sendAiAnalyzedMeals(target.id, meals, cal, prot, carb, fat)
+                }
+            )
+        }
+    }
 }
 
 @Composable
@@ -476,12 +519,12 @@ fun IronPulseBottomNavigation(
                 modifier = Modifier.testTag("nav_coach_protocol")
             )
             NavigationBarItem(
-                selected = currentCoachTab == CoachTab.CLASSES,
-                onClick = { onSelectCoachTab(CoachTab.CLASSES) },
-                icon = { Icon(Icons.Default.CalendarMonth, contentDescription = "Schedule") },
-                label = { Text("Classes", fontSize = 9.sp, fontWeight = FontWeight.Bold) },
+                selected = currentCoachTab == CoachTab.WORKOUTS,
+                onClick = { onSelectCoachTab(CoachTab.WORKOUTS) },
+                icon = { Icon(Icons.Default.Bolt, contentDescription = "Workouts") },
+                label = { Text("Workouts", fontSize = 9.sp, fontWeight = FontWeight.Bold) },
                 colors = navigationColors(GymCyan),
-                modifier = Modifier.testTag("nav_coach_classes")
+                modifier = Modifier.testTag("nav_coach_workouts")
             )
             NavigationBarItem(
                 selected = currentCoachTab == CoachTab.BILLING,
@@ -509,14 +552,6 @@ fun IronPulseBottomNavigation(
                 modifier = Modifier.testTag("nav_member_home")
             )
             NavigationBarItem(
-                selected = currentMemberTab == MemberTab.DIET,
-                onClick = { onSelectMemberTab(MemberTab.DIET) },
-                icon = { Icon(Icons.Default.Restaurant, contentDescription = "Diet") },
-                label = { Text("Diet", fontSize = 9.sp, fontWeight = FontWeight.Bold) },
-                colors = navigationColors(GymEmerald),
-                modifier = Modifier.testTag("nav_member_diet")
-            )
-            NavigationBarItem(
                 selected = currentMemberTab == MemberTab.WORKOUT,
                 onClick = { onSelectMemberTab(MemberTab.WORKOUT) },
                 icon = { Icon(Icons.Default.FitnessCenter, contentDescription = "Workout") },
@@ -525,12 +560,12 @@ fun IronPulseBottomNavigation(
                 modifier = Modifier.testTag("nav_member_workout")
             )
             NavigationBarItem(
-                selected = currentMemberTab == MemberTab.CLASSES,
-                onClick = { onSelectMemberTab(MemberTab.CLASSES) },
-                icon = { Icon(Icons.Default.CalendarMonth, contentDescription = "Classes") },
-                label = { Text("Classes", fontSize = 9.sp, fontWeight = FontWeight.Bold) },
+                selected = currentMemberTab == MemberTab.DIET,
+                onClick = { onSelectMemberTab(MemberTab.DIET) },
+                icon = { Icon(Icons.Default.Restaurant, contentDescription = "Diet") },
+                label = { Text("Diet", fontSize = 9.sp, fontWeight = FontWeight.Bold) },
                 colors = navigationColors(GymEmerald),
-                modifier = Modifier.testTag("nav_member_classes")
+                modifier = Modifier.testTag("nav_member_diet")
             )
             NavigationBarItem(
                 selected = currentMemberTab == MemberTab.ANALYTICS,

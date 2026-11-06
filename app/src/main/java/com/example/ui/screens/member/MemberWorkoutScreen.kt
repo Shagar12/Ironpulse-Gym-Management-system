@@ -65,6 +65,9 @@ import androidx.compose.ui.draw.clip
 import com.example.data.model.WorkoutProgressLogEntity
 import com.example.ui.components.WorkoutProgressTrackerComponent
 
+import androidx.compose.material.icons.filled.Bolt
+import com.example.ui.components.GlowingMuscleAnatomyView
+
 @Composable
 fun MemberWorkoutScreen(
     member: MemberEntity?,
@@ -90,7 +93,7 @@ fun MemberWorkoutScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(top = 10.dp, bottom = 24.dp)
     ) {
-        // Workout Sub-Tab Row: Daily Checklist vs PRs & Logged Progress
+        // Workout Sub-Tab Row: Daily Checklist vs Glowing Anatomy vs PRs
         item {
             TabRow(
                 selectedTabIndex = workoutSubTab,
@@ -99,7 +102,11 @@ fun MemberWorkoutScreen(
                 indicator = { tabPositions ->
                     TabRowDefaults.SecondaryIndicator(
                         Modifier.tabIndicatorOffset(tabPositions[workoutSubTab]),
-                        color = if (workoutSubTab == 0) GymCyan else GymAmber,
+                        color = when (workoutSubTab) {
+                            0 -> GymCyan
+                            1 -> GymEmerald
+                            else -> GymAmber
+                        },
                         height = 3.dp
                     )
                 },
@@ -113,21 +120,33 @@ fun MemberWorkoutScreen(
                     modifier = Modifier.testTag("tab_workout_checklist"),
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.ListAlt, contentDescription = null, modifier = Modifier.size(14.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("DAILY ROUTINE", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Icon(Icons.Default.ListAlt, contentDescription = null, modifier = Modifier.size(13.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("ROUTINE", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 )
                 Tab(
                     selected = workoutSubTab == 1,
                     onClick = { workoutSubTab = 1 },
+                    modifier = Modifier.testTag("tab_workout_anatomy"),
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Bolt, contentDescription = null, modifier = Modifier.size(13.dp), tint = GymEmerald)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("ANATOMY", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                )
+                Tab(
+                    selected = workoutSubTab == 2,
+                    onClick = { workoutSubTab = 2 },
                     modifier = Modifier.testTag("tab_workout_prs"),
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.EmojiEvents, contentDescription = null, modifier = Modifier.size(14.dp), tint = GymAmber)
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("PRS & WEIGHT LIFTED", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Icon(Icons.Default.EmojiEvents, contentDescription = null, modifier = Modifier.size(13.dp), tint = GymAmber)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("PRS", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 )
@@ -135,6 +154,13 @@ fun MemberWorkoutScreen(
         }
 
         if (workoutSubTab == 1) {
+            item {
+                GlowingMuscleAnatomyView(
+                    workouts = workouts,
+                    onToggleWorkout = onToggleWorkout
+                )
+            }
+        } else if (workoutSubTab == 2) {
             item {
                 WorkoutProgressTrackerComponent(
                     progressLogs = progressLogs,
@@ -290,13 +316,31 @@ fun MemberWorkoutScreen(
                                     )
                                 }
                             }
-                            Text(
-                                text = "${ex.sets} sets × ${ex.reps} reps",
-                                fontSize = 10.sp,
-                                fontFamily = FontFamily.Monospace,
-                                color = if (ex.isCompleted) TextMuted else GymCyan,
-                                modifier = Modifier.padding(top = 2.dp)
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "${ex.sets} sets × ${ex.reps} reps",
+                                    fontSize = 10.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = if (ex.isCompleted) TextMuted else GymCyan
+                                )
+                                Surface(
+                                    shape = RoundedCornerShape(4.dp),
+                                    color = if (ex.isCompleted) GymEmerald.copy(alpha = 0.2f) else GymCyan.copy(alpha = 0.12f),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, if (ex.isCompleted) GymEmerald.copy(alpha = 0.4f) else GymCyan.copy(alpha = 0.3f))
+                                ) {
+                                    Text(
+                                        text = if (ex.isCompleted) "✓ ${ex.muscleGroup.uppercase()}" else ex.muscleGroup.uppercase(),
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Black,
+                                        color = if (ex.isCompleted) GymEmerald else GymCyan,
+                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }

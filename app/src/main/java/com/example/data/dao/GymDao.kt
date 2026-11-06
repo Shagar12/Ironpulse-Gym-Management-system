@@ -61,6 +61,12 @@ interface GymDao {
     @Query("UPDATE members SET subscriptionDaysLeft = :daysLeft WHERE id = :id")
     suspend fun updateSubscriptionDays(id: String, daysLeft: Int)
 
+    @Query("UPDATE members SET waterIntakeMl = :waterMl WHERE id = :id")
+    suspend fun updateWaterIntake(id: String, waterMl: Int)
+
+    @Query("UPDATE members SET name = :name, currentWeight = :weight, heightCm = :height, goalPhase = :goalPhase, challengeLevel = :challengeLevel WHERE id = :id")
+    suspend fun updateMemberProfile(id: String, name: String, weight: Double, height: Double, goalPhase: String, challengeLevel: String)
+
     // --- Meals ---
     @Query("SELECT * FROM meals WHERE memberId = :memberId")
     fun getMealsForMember(memberId: String): Flow<List<MealEntity>>

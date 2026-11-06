@@ -164,10 +164,10 @@ fun IronPulseHeader(
     allMembers: List<MemberEntity>,
     onToggleRole: () -> Unit,
     onSelectActiveMember: (String) -> Unit,
+    onOpenEditProfile: () -> Unit = {},
     onSignOut: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    var memberMenuExpanded by remember { mutableStateOf(false) }
 
     Surface(
         color = GymDarkBg,
@@ -220,68 +220,35 @@ fun IronPulseHeader(
                 }
             }
 
-            // Quick Portal & Account Switcher
+            // Quick Portal & Account Actions
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Member switch dropdown if in member portal
-                if (role == UserRole.MEMBER && allMembers.isNotEmpty()) {
-                    Box {
-                        Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = GymSurfaceVariant,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, GymCardBorder),
-                            modifier = Modifier
-                                .clickable { memberMenuExpanded = true }
-                                .padding(horizontal = 8.dp, vertical = 5.dp)
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = "Switch Member",
-                                    tint = GymCyan,
-                                    modifier = Modifier.size(13.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "Switch",
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = TextSecondary
-                                )
-                            }
-                        }
-
-                        DropdownMenu(
-                            expanded = memberMenuExpanded,
-                            onDismissRequest = { memberMenuExpanded = false },
-                            modifier = Modifier.background(GymSurface)
-                        ) {
-                            allMembers.forEach { m ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Column {
-                                            Text(
-                                                text = m.name,
-                                                fontSize = 12.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = TextPrimary
-                                            )
-                                            Text(
-                                                text = "${m.goalPhase} • ${m.currentWeight}kg",
-                                                fontSize = 10.sp,
-                                                color = TextMuted
-                                            )
-                                        }
-                                    },
-                                    onClick = {
-                                        onSelectActiveMember(m.id)
-                                        memberMenuExpanded = false
-                                    }
-                                )
-                            }
-                        }
+                // Edit Profile Button (for current user/member)
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = GymSurfaceVariant,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, GymCardBorder),
+                    modifier = Modifier
+                        .testTag("header_edit_profile_button")
+                        .clickable { onOpenEditProfile() }
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Edit Profile",
+                            tint = GymCyan,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Edit Profile",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = TextSecondary
+                        )
                     }
-                    Spacer(modifier = Modifier.width(6.dp))
                 }
+                Spacer(modifier = Modifier.width(6.dp))
 
                 // Switch Role Toggle
                 Surface(

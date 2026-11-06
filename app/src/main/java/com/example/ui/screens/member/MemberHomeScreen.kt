@@ -29,6 +29,8 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Edit
+import com.example.ui.components.WaterTrackerComponent
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -82,10 +84,13 @@ fun MemberHomeScreen(
     workouts: List<WorkoutExerciseEntity>,
     onToggleCheckIn: () -> Unit,
     onLogWeight: (Double) -> Unit,
+    onAddWater: (Int) -> Unit = {},
+    onResetWater: () -> Unit = {},
+    onOpenEditProfile: () -> Unit = {},
     onRenewSubscription: (plan: String, amount: Double) -> Unit,
     onNavigateToDiet: () -> Unit,
     onNavigateToWorkout: () -> Unit,
-    onNavigateToClasses: () -> Unit,
+    onNavigateToClasses: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     if (member == null) {
@@ -238,7 +243,25 @@ fun MemberHomeScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("ACTIVE PROGRAM", fontSize = 9.sp, fontWeight = FontWeight.Black, color = TextMuted, letterSpacing = 1.sp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("ACTIVE PROGRAM", fontSize = 9.sp, fontWeight = FontWeight.Black, color = TextMuted, letterSpacing = 1.sp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = GymCyan.copy(alpha = 0.15f),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, GymCyan.copy(alpha = 0.4f)),
+                                modifier = Modifier
+                                    .testTag("edit_profile_card_button")
+                                    .clickable { onOpenEditProfile() }
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Edit Profile", tint = GymCyan, modifier = Modifier.size(10.dp))
+                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Text("Edit", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = GymCyan)
+                                }
+                            }
+                        }
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                             IntensityBadge(level = member.challengeLevel)
                             PhasePill(phase = member.goalPhase)
@@ -298,6 +321,16 @@ fun MemberHomeScreen(
                     }
                 }
             }
+        }
+
+        // Daily Hydration Water Tracker
+        item {
+            WaterTrackerComponent(
+                currentMl = member.waterIntakeMl,
+                targetMl = 3000,
+                onAddWater = onAddWater,
+                onResetWater = onResetWater
+            )
         }
 
         // Dynamic BMI Health Card

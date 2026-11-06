@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>IronPulse - High-Performance Athletic & Gym Management OS</title>
+  <title>IronPulse - Athletic & Gym Management OS</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -31,16 +31,16 @@
           },
           animation: {
             'pulse-glow': 'pulseGlow 2.5s infinite alternate',
-            'float': 'float 5s ease-in-out infinite'
+            'muscle-glow': 'muscleGlow 1.8s infinite alternate'
           },
           keyframes: {
             pulseGlow: {
               '0%': { boxShadow: '0 0 15px rgba(0, 243, 255, 0.3)' },
               '100%': { boxShadow: '0 0 30px rgba(0, 243, 255, 0.7)' }
             },
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-6px)' }
+            muscleGlow: {
+              '0%': { filter: 'drop-shadow(0 0 4px #00f3ff)' },
+              '100%': { filter: 'drop-shadow(0 0 14px #00f3ff) drop-shadow(0 0 20px #10b981)' }
             }
           }
         }
@@ -69,7 +69,6 @@
       background-image: radial-gradient(rgba(0, 243, 255, 0.08) 1px, transparent 0);
       background-size: 30px 30px;
     }
-    /* Monolithic Twin Bars Intro Easing */
     .twin-bar {
       transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
     }
@@ -83,11 +82,31 @@
     .echo-ring {
       animation: echoRipple 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
     }
-    /* Phone frame scrollbar styling */
     .phone-screen::-webkit-scrollbar { width: 4px; }
     .phone-screen::-webkit-scrollbar-track { background: transparent; }
     .phone-screen::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     .phone-screen::-webkit-scrollbar-thumb:hover { background: #00f3ff; }
+
+    /* Muscle anatomy path styling */
+    .muscle-part {
+      transition: all 0.4s ease;
+      cursor: pointer;
+    }
+    .muscle-part.active {
+      fill: #00f3ff !important;
+      filter: drop-shadow(0 0 8px #00f3ff);
+      stroke: #ffffff;
+      stroke-width: 1.5;
+    }
+    .muscle-part.secondary {
+      fill: #10b981 !important;
+      filter: drop-shadow(0 0 6px #10b981);
+    }
+    .muscle-part.inactive {
+      fill: #1e2538;
+      stroke: #2d3748;
+      stroke-width: 0.8;
+    }
   </style>
 </head>
 <body class="min-h-screen cyber-grid flex flex-col items-center justify-start selection:bg-gymCyan selection:text-black">
@@ -110,12 +129,12 @@
         IRONPULSE
       </h1>
       <p id="introSubtitle" class="text-xs sm:text-sm font-mono text-gymCyan/80 uppercase tracking-[0.3em] mt-3 opacity-0 transition-opacity duration-1000">
-        HIGH-PERFORMANCE ATHLETIC &amp; GYM OS
+        AI NUTRITION • MUSCLE TELEMETRY • WORKOUT OS
       </p>
     </div>
     <div class="absolute bottom-10 flex items-center space-x-3 z-20">
       <button onclick="dismissIntro()" class="px-5 py-2 rounded-full border border-gymCyan/30 bg-gymCyan/10 text-gymCyan text-xs font-mono hover:bg-gymCyan hover:text-black transition-all">
-        Enter Application <i class="fa-solid fa-arrow-right ml-1"></i>
+        Enter Gym App <i class="fa-solid fa-arrow-right ml-1"></i>
       </button>
     </div>
   </div>
@@ -123,7 +142,7 @@
   <!-- ============================================================== -->
   <!-- TOP PLATFORM UTILITY BAR                                       -->
   <!-- ============================================================== -->
-  <header class="w-full bg-[#090b12]/95 border-b border-gymCardBorder sticky top-0 z-40 backdrop-blur-md px-4 py-2.5 flex items-center justify-between">
+  <header class="w-full bg-[#090b12]/95 border-b border-gymCardBorder sticky top-0 z-40 backdrop-blur-md px-4 py-2 flex items-center justify-between">
     <div class="flex items-center space-x-3">
       <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-gymCyan to-gymEmerald p-0.5 flex items-center justify-center">
         <div class="w-full h-full bg-[#090a0f] rounded-[7px] flex items-center justify-center">
@@ -131,32 +150,29 @@
         </div>
       </div>
       <div>
-        <span class="text-sm font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-gymCyan">IRONPULSE MOBILE</span>
-        <span class="text-[9px] block font-mono text-gymCyan/80 tracking-widest leading-none">WEB BROWSER SIMULATOR</span>
+        <span class="text-sm font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-gymCyan">IRONPULSE</span>
+        <span class="text-[9px] block font-mono text-gymCyan/80 tracking-widest leading-none">ATHLETIC OS</span>
       </div>
     </div>
 
     <!-- Controls -->
     <div class="flex items-center space-x-2 text-xs">
-      <!-- Phone vs Fullscreen Toggle -->
       <div class="hidden sm:flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
         <button id="viewPhoneBtn" onclick="toggleViewportMode('phone')" class="px-3 py-1 rounded-md text-[11px] font-bold bg-gymCyan text-black transition-all flex items-center space-x-1.5">
           <i class="fa-solid fa-mobile-screen"></i>
-          <span>Phone View</span>
+          <span>Phone</span>
         </button>
         <button id="viewFullscreenBtn" onclick="toggleViewportMode('fullscreen')" class="px-3 py-1 rounded-md text-[11px] font-bold text-slate-400 hover:text-white transition-all flex items-center space-x-1.5">
           <i class="fa-solid fa-desktop"></i>
-          <span>Fullscreen</span>
+          <span>Expanded</span>
         </button>
       </div>
 
-      <!-- Audio Synth Pulse Replay -->
-      <button onclick="playHarmonicAudio(); triggerIntroAnimation();" class="px-2.5 py-1.5 rounded-lg border border-gymCyan/30 bg-gymCyan/10 text-gymCyan hover:bg-gymCyan hover:text-black transition-all text-xs flex items-center space-x-1" title="Play Monolithic Sub-Bass Synthesizer">
+      <button onclick="playHarmonicAudio(); triggerIntroAnimation();" class="px-2.5 py-1.5 rounded-lg border border-gymCyan/30 bg-gymCyan/10 text-gymCyan hover:bg-gymCyan hover:text-black transition-all text-xs flex items-center space-x-1" title="Play Synthesizer Audio">
         <i class="fa-solid fa-volume-high"></i>
         <span class="hidden md:inline font-mono text-[10px]">Audio</span>
       </button>
 
-      <!-- Toggle Showcase / APK Page -->
       <button onclick="toggleShowcaseModal()" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-gymIndigo to-purple-600 text-white font-bold text-xs hover:brightness-110 transition-all flex items-center space-x-1.5">
         <i class="fa-solid fa-cloud-arrow-down"></i>
         <span class="hidden sm:inline">APK Download</span>
@@ -165,32 +181,29 @@
   </header>
 
   <!-- ============================================================== -->
-  <!-- MAIN SIMULATOR CONTAINER (Exact Android Phone View)            -->
+  <!-- MAIN CONTAINER (Exact Android Phone View)                      -->
   <!-- ============================================================== -->
-  <main id="appContainer" class="w-full flex justify-center items-center py-4 sm:py-8 px-2 transition-all">
-    <!-- Phone Bezel Frame -->
+  <main id="appContainer" class="w-full flex justify-center items-center py-4 sm:py-6 px-2 transition-all">
     <div id="phoneFrame" class="w-full max-w-[420px] h-[870px] bg-[#090a0f] rounded-[48px] border-[10px] border-[#181d2c] shadow-[0_0_60px_rgba(0,0,0,0.9),0_0_30px_rgba(0,243,255,0.15)] relative overflow-hidden flex flex-col ring-1 ring-slate-700/60 transition-all">
 
       <!-- ========================================== -->
-      <!-- ANDROID STATUS BAR (Time, Notch, Battery)  -->
+      <!-- ANDROID STATUS BAR                         -->
       <!-- ========================================== -->
       <div class="h-10 bg-[#090a0f] px-6 flex items-center justify-between text-xs text-slate-300 font-semibold select-none shrink-0 z-30 border-b border-slate-900/60">
         <span id="androidClock" class="font-mono text-[11px]">10:42</span>
-        <!-- Front Camera Notch -->
         <div class="w-24 h-4 bg-[#141926] rounded-full flex items-center justify-center space-x-2">
           <div class="w-2 h-2 rounded-full bg-black border border-slate-800"></div>
           <div class="w-1.5 h-1.5 rounded-full bg-cyan-900/60"></div>
         </div>
         <div class="flex items-center space-x-2 text-[10px]">
           <i class="fa-solid fa-wifi text-slate-300"></i>
-          <i class="fa-solid fa-signal text-slate-300"></i>
           <span class="text-gymEmerald font-mono font-bold">100%</span>
           <i class="fa-solid fa-battery-full text-gymEmerald text-xs"></i>
         </div>
       </div>
 
       <!-- ========================================== -->
-      <!-- MOBILE APP HEADER (Always inside phone)    -->
+      <!-- MOBILE APP HEADER                          -->
       <!-- ========================================== -->
       <div id="phoneHeader" class="hidden bg-[#090a0f]/95 border-b border-gymCardBorder px-4 py-2.5 flex items-center justify-between shrink-0 z-20 backdrop-blur-md">
         <div class="flex items-center space-x-2.5">
@@ -204,15 +217,15 @@
               <span class="text-xs font-black tracking-wider text-white">IRONPULSE</span>
               <span id="headerRoleBadge" class="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-gymCyan/20 text-gymCyan border border-gymCyan/40 font-bold">COACH</span>
             </div>
-            <div class="text-[10px] text-slate-400 truncate max-w-[140px]" id="headerUserName">Coach Marcus</div>
+            <div class="text-[10px] text-slate-400 truncate max-w-[130px]" id="headerUserName">Coach Marcus</div>
           </div>
         </div>
 
-        <!-- Role Toggle & Logout -->
+        <!-- Account Profile Edit & Sign Out -->
         <div class="flex items-center space-x-1.5">
-          <button onclick="toggleRoleSwitch()" class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-gymCyan/40 text-[10px] text-gymCyan font-bold transition-all flex items-center space-x-1" title="Switch Portal Role">
-            <i class="fa-solid fa-arrows-rotate text-[9px]"></i>
-            <span id="roleToggleText">Member Mode</span>
+          <button onclick="openProfileEditModal()" class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-gymCyan/50 text-[10px] text-gymCyan font-bold transition-all flex items-center space-x-1" title="Edit Profile Details">
+            <i class="fa-solid fa-user-pen text-[9px]"></i>
+            <span>Edit Profile</span>
           </button>
           <button onclick="signOut()" class="p-1.5 rounded-lg text-slate-400 hover:text-gymRose hover:bg-gymRose/10 transition-all text-xs" title="Sign Out">
             <i class="fa-solid fa-right-from-bracket"></i>
@@ -226,20 +239,19 @@
       <div id="phoneBody" class="phone-screen flex-1 bg-[#090a0f] overflow-y-auto overflow-x-hidden flex flex-col relative text-slate-200">
 
         <!-- ======================================== -->
-        <!-- SCREEN 1: SIGN IN & SIGN UP PORTAL       -->
+        <!-- SCREEN 1: SIGN IN & SIGN UP (EVERYONE)   -->
         <!-- ======================================== -->
         <div id="screenAuth" class="flex-1 p-5 flex flex-col justify-between">
-          <!-- Auth Brand Header -->
           <div class="text-center mt-3">
             <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-gymCyan/20 to-gymEmerald/15 border-2 border-gymCyan mx-auto flex items-center justify-center shadow-[0_0_25px_rgba(0,243,255,0.3)] mb-3">
               <i class="fa-solid fa-dumbbell text-2xl text-gymCyan transform -rotate-45"></i>
             </div>
             <h1 class="text-2xl font-black text-white tracking-[0.15em]">IRONPULSE</h1>
-            <p class="text-[10px] font-mono text-gymCyan uppercase tracking-widest mt-0.5">High-Performance Athletic &amp; Gym OS</p>
+            <p class="text-[10px] font-mono text-gymCyan uppercase tracking-widest mt-0.5">Dedicated Athlete &amp; Coach Portal</p>
           </div>
 
-          <!-- Auth Tabs (Sign In vs Sign Up) -->
-          <div class="my-4 bg-slate-900/90 p-1 rounded-2xl border border-slate-800 flex">
+          <!-- Auth Tabs -->
+          <div class="my-3 bg-slate-900/90 p-1 rounded-2xl border border-slate-800 flex">
             <button id="authTabSignInBtn" onclick="switchAuthTab('signin')" class="flex-1 py-2 rounded-xl text-xs font-bold bg-gymCyan text-black transition-all shadow-[0_0_10px_rgba(0,243,255,0.3)]">
               Sign In
             </button>
@@ -248,29 +260,23 @@
             </button>
           </div>
 
-          <!-- Alert / Error message banner -->
           <div id="authAlertBanner" class="hidden mb-3 p-3 rounded-xl text-xs border"></div>
 
           <!-- SUB-VIEW A: SIGN IN FORM -->
           <div id="authSignInContainer" class="space-y-3.5">
-            <!-- 1-Click Fast Demo Sign-In Buttons -->
+            <!-- 1-Click Fast Sign-In Portal for Demo -->
             <div class="bg-slate-900/80 border border-slate-800/90 p-3 rounded-2xl space-y-2">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block text-center">1-Click Fast Sign-In Portal</span>
-              <div class="grid grid-cols-3 gap-1.5">
-                <button onclick="fillAndSignIn('coach@fitgym.com', '123456')" class="p-2 rounded-xl bg-gymCyan/10 border border-gymCyan/30 hover:bg-gymCyan hover:text-black text-gymCyan transition-all flex flex-col items-center text-center">
-                  <i class="fa-solid fa-shield-halved text-xs mb-1"></i>
-                  <span class="text-[10px] font-bold">Coach</span>
-                  <span class="text-[8px] text-slate-400 font-mono">Marcus</span>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block text-center">Fast Login Selector</span>
+              <div class="grid grid-cols-2 gap-2">
+                <button onclick="fillAndSignIn('coach@fitgym.com', '123456')" class="p-2.5 rounded-xl bg-gymCyan/10 border border-gymCyan/30 hover:bg-gymCyan hover:text-black text-gymCyan transition-all flex flex-col items-center text-center">
+                  <i class="fa-solid fa-shield-halved text-sm mb-1"></i>
+                  <span class="text-xs font-bold">Coach Marcus</span>
+                  <span class="text-[9px] text-slate-400 font-mono">coach@fitgym.com</span>
                 </button>
-                <button onclick="fillAndSignIn('client@fitgym.com', '123456')" class="p-2 rounded-xl bg-gymEmerald/10 border border-gymEmerald/30 hover:bg-gymEmerald hover:text-black text-gymEmerald transition-all flex flex-col items-center text-center">
-                  <i class="fa-solid fa-user text-xs mb-1"></i>
-                  <span class="text-[10px] font-bold">Member</span>
-                  <span class="text-[8px] text-slate-400 font-mono">Alex</span>
-                </button>
-                <button onclick="fillAndSignIn('newbie@fitgym.com', '123456')" class="p-2 rounded-xl bg-gymAmber/10 border border-gymAmber/30 hover:bg-gymAmber hover:text-black text-gymAmber transition-all flex flex-col items-center text-center">
-                  <i class="fa-solid fa-clock text-xs mb-1"></i>
-                  <span class="text-[10px] font-bold">Applicant</span>
-                  <span class="text-[8px] text-slate-400 font-mono">Mike</span>
+                <button onclick="fillAndSignIn('client@fitgym.com', '123456')" class="p-2.5 rounded-xl bg-gymEmerald/10 border border-gymEmerald/30 hover:bg-gymEmerald hover:text-black text-gymEmerald transition-all flex flex-col items-center text-center">
+                  <i class="fa-solid fa-user text-sm mb-1"></i>
+                  <span class="text-xs font-bold">Alex Rivera</span>
+                  <span class="text-[9px] text-slate-400 font-mono">client@fitgym.com</span>
                 </button>
               </div>
             </div>
@@ -281,7 +287,7 @@
                 <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Email Address</label>
                 <div class="relative">
                   <i class="fa-solid fa-envelope text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
-                  <input type="email" id="inputSignInEmail" required placeholder="coach@fitgym.com or client@fitgym.com" value="coach@fitgym.com" class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-gymCyan">
+                  <input type="email" id="inputSignInEmail" required placeholder="Enter your specific account email" value="client@fitgym.com" class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-gymCyan">
                 </div>
               </div>
 
@@ -297,33 +303,31 @@
               </div>
 
               <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-gymCyan to-gymEmerald text-black font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,243,255,0.4)] active:scale-95 transition-all">
-                Enter Portal
+                Sign In to My Account
               </button>
             </form>
           </div>
 
           <!-- SUB-VIEW B: SIGN UP FORM -->
-          <div id="authSignUpContainer" class="hidden space-y-3">
+          <div id="authSignUpContainer" class="hidden space-y-2.5">
             <form onsubmit="handleManualSignUp(event)" class="space-y-2.5">
-              <!-- Name & Email -->
               <div>
-                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Full Name</label>
-                <input type="text" id="signUpFullName" required placeholder="e.g. Jordan Lee" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-gymCyan">
+                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Full Name</label>
+                <input type="text" id="signUpFullName" required placeholder="e.g. Jordan Lee" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-gymCyan">
               </div>
 
               <div>
-                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Email</label>
-                <input type="email" id="signUpEmailInput" required placeholder="jordan@example.com" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-gymCyan">
+                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Email</label>
+                <input type="email" id="signUpEmailInput" required placeholder="jordan@example.com" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-gymCyan">
               </div>
 
               <div>
-                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Password</label>
-                <input type="password" id="signUpPasswordInput" required placeholder="At least 6 characters" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-gymCyan">
+                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Password</label>
+                <input type="password" id="signUpPasswordInput" required placeholder="At least 6 characters" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-gymCyan">
               </div>
 
-              <!-- Role Selection -->
               <div>
-                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Desired Role</label>
+                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Account Type</label>
                 <div class="grid grid-cols-2 gap-2">
                   <label class="cursor-pointer">
                     <input type="radio" name="signUpRoleOption" value="MEMBER" checked class="peer sr-only">
@@ -334,42 +338,40 @@
                   <label class="cursor-pointer">
                     <input type="radio" name="signUpRoleOption" value="COACH" class="peer sr-only">
                     <div class="p-2 text-center rounded-xl border border-slate-800 bg-slate-900 peer-checked:border-gymCyan peer-checked:bg-gymCyan/10 text-xs font-bold peer-checked:text-gymCyan transition">
-                      Staff Coach
+                      Coach Account
                     </div>
                   </label>
                 </div>
               </div>
 
-              <!-- Metrics -->
               <div class="grid grid-cols-3 gap-2">
                 <div>
-                  <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Weight(kg)</label>
-                  <input type="number" step="0.5" id="signUpWeightInput" required value="76" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white focus:border-gymCyan">
+                  <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Weight(kg)</label>
+                  <input type="number" step="0.5" id="signUpWeightInput" required value="75" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
                 </div>
                 <div>
-                  <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Height(cm)</label>
-                  <input type="number" id="signUpHeightInput" required value="178" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white focus:border-gymCyan">
+                  <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Height(cm)</label>
+                  <input type="number" id="signUpHeightInput" required value="176" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
                 </div>
                 <div>
-                  <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Age</label>
-                  <input type="number" id="signUpAgeInput" required value="26" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white focus:border-gymCyan">
+                  <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Age</label>
+                  <input type="number" id="signUpAgeInput" required value="25" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
                 </div>
               </div>
 
-              <!-- Goal Phase -->
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Goal Phase</label>
-                  <select id="signUpGoalPhaseInput" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-xs text-white focus:border-gymCyan">
+                  <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Goal Phase</label>
+                  <select id="signUpGoalPhaseInput" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-xs text-white">
                     <option value="Cutting">Cutting</option>
                     <option value="Maintaining">Maintaining</option>
-                    <option value="Lean Bulking">Lean Bulking</option>
+                    <option value="Lean Bulking" selected>Lean Bulking</option>
                     <option value="Bulking">Bulking</option>
                   </select>
                 </div>
                 <div>
-                  <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Level</label>
-                  <select id="signUpLevelInput" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-xs text-white focus:border-gymCyan">
+                  <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Challenge Level</label>
+                  <select id="signUpLevelInput" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-xs text-white">
                     <option value="Beginner">Beginner</option>
                     <option value="Intermediate" selected>Intermediate</option>
                     <option value="Advanced">Advanced</option>
@@ -378,61 +380,29 @@
                 </div>
               </div>
 
-              <div class="p-2.5 rounded-xl bg-gymAmber/10 border border-gymAmber/30 text-[10px] text-gymAmber flex items-start space-x-2">
-                <i class="fa-solid fa-circle-info mt-0.5"></i>
-                <span>Signups require coach approval before full access is unlocked.</span>
-              </div>
-
               <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-gymIndigo to-purple-600 text-white font-black text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all">
-                Create Account &amp; Join
+                Create Account &amp; Enter
               </button>
             </form>
           </div>
 
-          <div class="text-center mt-4">
-            <span class="text-[10px] text-slate-500 font-mono">Native Android SDK • Room DB Sync</span>
+          <div class="text-center mt-3">
+            <span class="text-[10px] text-slate-500 font-mono">Each member views only their personal account</span>
           </div>
         </div>
 
         <!-- ======================================== -->
-        <!-- SCREEN 2: PENDING APPLICANT REVIEW VIEW  -->
-        <!-- ======================================== -->
-        <div id="screenPendingApplicant" class="hidden flex-1 p-6 flex flex-col justify-center items-center text-center">
-          <div class="w-16 h-16 rounded-2xl bg-gymAmber/15 border border-gymAmber/40 text-gymAmber text-3xl mx-auto flex items-center justify-center mb-4">
-            <i class="fa-solid fa-hourglass-half animate-pulse"></i>
-          </div>
-          <h2 class="text-xl font-black text-white">Application Under Coach Review</h2>
-          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-            Welcome, <strong class="text-gymAmber" id="pendingApplicantName">Mike Ross</strong>. Your registration is awaiting verification from the head coach.
-          </p>
-
-          <div class="w-full mt-6 p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-2 text-xs">
-            <div class="flex justify-between">
-              <span class="text-slate-400">Account:</span>
-              <span class="text-white font-mono" id="pendingApplicantEmail">newbie@fitgym.com</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">Status:</span>
-              <span class="text-gymAmber font-mono font-bold">Pending Coach Approval</span>
-            </div>
-          </div>
-
-          <button onclick="fillAndSignIn('coach@fitgym.com', '123456')" class="mt-6 w-full py-3 rounded-xl bg-gymCyan text-black font-bold text-xs hover:bg-cyan-300 transition-all">
-            Switch to Coach Marcus to Approve Account
-          </button>
-        </div>
-
-        <!-- ======================================== -->
-        <!-- SCREEN 3: COACH PORTAL SCREENS           -->
+        <!-- SCREEN 2: COACH PORTAL SCREENS           -->
         <!-- ======================================== -->
         <div id="screenCoachPortal" class="hidden flex-1 flex flex-col p-4 space-y-4">
-          <!-- Coach Sub-Screens Container -->
-          
-          <!-- TAB 1: ROSTER -->
+          <!-- COACH TAB 1: ROSTER -->
           <div id="coachRosterSubScreen" class="space-y-3.5">
             <div class="flex items-center justify-between">
-              <h2 class="text-sm font-black tracking-wider text-white">ATHLETE ROSTER</h2>
-              <button onclick="openModal('modalAddMember')" class="px-3 py-1.5 rounded-xl bg-gymEmerald text-black font-bold text-xs hover:bg-emerald-400 transition-all flex items-center space-x-1">
+              <div>
+                <h2 class="text-sm font-black tracking-wider text-white">GYM ATHLETES ROSTER</h2>
+                <span class="text-[10px] text-slate-400 font-mono">Select a member to manage plan</span>
+              </div>
+              <button onclick="openModal('modalAddMember')" class="px-2.5 py-1.5 rounded-xl bg-gymEmerald text-black font-bold text-xs hover:bg-emerald-400 transition-all flex items-center space-x-1">
                 <i class="fa-solid fa-plus text-[10px]"></i>
                 <span>Add Member</span>
               </button>
@@ -441,15 +411,7 @@
             <!-- Search Bar -->
             <div class="relative">
               <i class="fa-solid fa-magnifying-glass text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
-              <input type="text" id="rosterSearchInput" oninput="filterRoster()" placeholder="Search athletes by name..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-gymCyan">
-            </div>
-
-            <!-- Filter Chips -->
-            <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 text-[10px]">
-              <button onclick="setRosterFilter('ALL')" id="filterAll" class="px-3 py-1 rounded-full bg-gymCyan text-black font-bold shrink-0">ALL</button>
-              <button onclick="setRosterFilter('AT_GYM')" id="filterAtGym" class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white shrink-0">AT GYM</button>
-              <button onclick="setRosterFilter('PENDING')" id="filterPending" class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white shrink-0">PENDING</button>
-              <button onclick="setRosterFilter('ACTIVE')" id="filterActive" class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white shrink-0">ACTIVE</button>
+              <input type="text" id="rosterSearchInput" oninput="filterRoster()" placeholder="Search members by name or email..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-gymCyan">
             </div>
 
             <!-- Members List Cards -->
@@ -458,12 +420,21 @@
             </div>
           </div>
 
-          <!-- TAB 2: PROTOCOL -->
+          <!-- COACH TAB 2: NUTRITION & AI ANALYZER -->
           <div id="coachProtocolSubScreen" class="hidden space-y-4">
             <div class="flex items-center justify-between">
-              <h2 class="text-sm font-black tracking-wider text-white">NUTRITION &amp; TRAINING PROTOCOL</h2>
+              <div>
+                <h2 class="text-sm font-black tracking-wider text-white">CLIENT NUTRITION &amp; DIET PLAN</h2>
+                <span class="text-[10px] text-slate-400 font-mono" id="coachActiveClientSubtitle">Managing: Alex Rivera</span>
+              </div>
+              <!-- AI Client Analyzer Button -->
+              <button onclick="triggerAiClientAnalysis()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-gymCyan to-gymEmerald text-black font-black text-xs shadow-[0_0_15px_rgba(0,243,255,0.4)] hover:brightness-110 transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                <span>Analyze with AI</span>
+              </button>
             </div>
-            <!-- Protocol Card -->
+
+            <!-- Client Target Macro Card -->
             <div class="p-4 rounded-2xl bg-[#101422] border border-gymCardBorder space-y-3">
               <div class="flex justify-between items-center">
                 <span class="text-xs font-bold text-white" id="protoMemberName">Alex Rivera</span>
@@ -491,7 +462,7 @@
 
               <!-- Quick Phase Recalculate -->
               <div>
-                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Adjust Phase (Auto Macro Calc)</label>
+                <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Recalculate Macros by Phase</label>
                 <div class="grid grid-cols-4 gap-1">
                   <button onclick="coachAdjustPhase('Cutting')" class="py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-gymRose text-[9px] font-bold text-gymRose">Cutting</button>
                   <button onclick="coachAdjustPhase('Maintaining')" class="py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-gymAmber text-[9px] font-bold text-gymAmber">Maintain</button>
@@ -500,31 +471,51 @@
                 </div>
               </div>
             </div>
+
+            <!-- Prescribed Meals List for this Member -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-white">Prescribed Daily Meals</span>
+                <button onclick="openModal('modalAddMeal')" class="text-gymCyan text-[11px] font-bold hover:underline">+ Add Custom Meal</button>
+              </div>
+              <div id="coachPrescribedMealsList" class="space-y-2">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
           </div>
 
-          <!-- TAB 3: SCHEDULE -->
-          <div id="coachScheduleSubScreen" class="hidden space-y-3.5">
+          <!-- COACH TAB 3: ASSIGN DAILY WORKOUT PLANS -->
+          <div id="coachWorkoutsSubScreen" class="hidden space-y-3.5">
             <div class="flex items-center justify-between">
-              <h2 class="text-sm font-black tracking-wider text-white">AUTOMATED CLASS TIMETABLE</h2>
-              <button onclick="openModal('modalAddClass')" class="px-2.5 py-1 rounded-xl bg-gymCyan text-black font-bold text-xs hover:bg-cyan-300">
-                + Class
+              <div>
+                <h2 class="text-sm font-black tracking-wider text-white">ASSIGN DAILY WORKOUT PLAN</h2>
+                <span class="text-[10px] text-slate-400 font-mono" id="coachWorkoutClientLabel">Client: Alex Rivera</span>
+              </div>
+              <button onclick="openModal('modalAssignWorkout')" class="px-2.5 py-1.5 rounded-xl bg-gymCyan text-black font-bold text-xs hover:bg-cyan-300">
+                + Assign Exercise
               </button>
             </div>
-            <div id="coachClassList" class="space-y-2.5">
+
+            <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-300">
+              <i class="fa-solid fa-person-chalkboard text-gymCyan mr-1.5"></i>
+              Exercises assigned here will appear on the client's phone for today's session and ignite their <strong>Glowing Muscle Anatomy</strong> as they complete them.
+            </div>
+
+            <div id="coachAssignedWorkoutsList" class="space-y-2.5">
               <!-- Dynamically populated -->
             </div>
           </div>
 
-          <!-- TAB 4: BILLING -->
+          <!-- COACH TAB 4: BILLING -->
           <div id="coachBillingSubScreen" class="hidden space-y-3.5">
-            <h2 class="text-sm font-black tracking-wider text-white">SUBSCRIPTION &amp; BILLING</h2>
+            <h2 class="text-sm font-black tracking-wider text-white">MEMBER SUBSCRIPTIONS</h2>
             <div class="grid grid-cols-2 gap-2 text-xs">
               <div class="p-3 rounded-2xl bg-[#101422] border border-gymCardBorder">
-                <div class="text-[10px] text-slate-400 font-mono">Active Members</div>
+                <div class="text-[10px] text-slate-400 font-mono">Active Memberships</div>
                 <div class="text-lg font-bold text-gymEmerald font-mono" id="billingActiveCount">2</div>
               </div>
               <div class="p-3 rounded-2xl bg-[#101422] border border-gymCardBorder">
-                <div class="text-[10px] text-slate-400 font-mono">Overdue / Renewal</div>
+                <div class="text-[10px] text-slate-400 font-mono">Due Soon (&lt;5 days)</div>
                 <div class="text-lg font-bold text-gymAmber font-mono" id="billingDueCount">1</div>
               </div>
             </div>
@@ -533,9 +524,9 @@
             </div>
           </div>
 
-          <!-- TAB 5: AUDIT -->
+          <!-- COACH TAB 5: AUDIT -->
           <div id="coachAuditSubScreen" class="hidden space-y-3.5">
-            <h2 class="text-sm font-black tracking-wider text-white">REALTIME SECURITY AUDIT LOG</h2>
+            <h2 class="text-sm font-black tracking-wider text-white">SECURITY AUDIT LOG</h2>
             <div id="coachAuditList" class="space-y-2 text-xs">
               <!-- Dynamically Populated -->
             </div>
@@ -543,18 +534,16 @@
         </div>
 
         <!-- ======================================== -->
-        <!-- SCREEN 4: MEMBER PORTAL SCREENS          -->
+        <!-- SCREEN 3: MEMBER PORTAL SCREENS          -->
         <!-- ======================================== -->
         <div id="screenMemberPortal" class="hidden flex-1 flex flex-col p-4 space-y-4">
-          <!-- Member Sub-Screens Container -->
-
-          <!-- SUB-TAB 1: HOME -->
+          <!-- MEMBER SUB-TAB 1: HOME -->
           <div id="memberHomeSubScreen" class="space-y-3.5">
             <!-- Greeting & Check-In Card -->
             <div class="p-4 rounded-3xl bg-gradient-to-br from-[#101422] to-[#151b2e] border border-gymCardBorder space-y-3">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-[10px] font-mono text-gymCyan uppercase tracking-widest font-bold">ATHLETE PORTAL</div>
+                  <div class="text-[10px] font-mono text-gymCyan uppercase tracking-widest font-bold">MY PERSONAL PORTAL</div>
                   <h2 class="text-lg font-black text-white" id="memberGreetingName">Alex Rivera</h2>
                 </div>
                 <span id="memberAtGymTag" class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">AWAY</span>
@@ -567,108 +556,180 @@
               </button>
             </div>
 
-            <!-- Daily Nutrition Macro Summary -->
+            <!-- WATER TRACKER COMPONENT -->
+            <div class="p-4 rounded-2xl bg-[#101422] border border-gymCyan/30 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <div class="w-7 h-7 rounded-lg bg-gymCyan/15 text-gymCyan flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-droplet animate-pulse"></i>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-white block">Hydration &amp; Water Tracker</span>
+                    <span class="text-[9px] text-slate-400 font-mono">Target: 3,000 ml / day</span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-sm font-black font-mono text-gymCyan" id="waterAmountText">1,750</span>
+                  <span class="text-[10px] text-slate-400 font-mono">/ 3000 ml</span>
+                </div>
+              </div>
+
+              <!-- Water Level Progress Bar -->
+              <div class="space-y-1">
+                <div class="h-3 rounded-full bg-slate-900 border border-slate-800 overflow-hidden p-0.5">
+                  <div id="waterProgressBar" class="h-full bg-gradient-to-r from-gymCyan via-teal-400 to-gymEmerald rounded-full transition-all duration-500 w-[58%]"></div>
+                </div>
+                <div class="flex justify-between text-[9px] text-slate-500 font-mono">
+                  <span id="waterGlassesText">7 of 12 glasses</span>
+                  <span id="waterPercentageText" class="text-gymCyan font-bold">58%</span>
+                </div>
+              </div>
+
+              <!-- Water Quick-Add Buttons -->
+              <div class="grid grid-cols-4 gap-1.5 pt-1">
+                <button onclick="addWater(250)" class="py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-gymCyan text-[10px] font-bold text-gymCyan flex flex-col items-center">
+                  <span>+250ml</span>
+                  <span class="text-[8px] text-slate-500">Glass</span>
+                </button>
+                <button onclick="addWater(500)" class="py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-gymCyan text-[10px] font-bold text-gymCyan flex flex-col items-center">
+                  <span>+500ml</span>
+                  <span class="text-[8px] text-slate-500">Bottle</span>
+                </button>
+                <button onclick="addWater(750)" class="py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-gymCyan text-[10px] font-bold text-gymCyan flex flex-col items-center">
+                  <span>+750ml</span>
+                  <span class="text-[8px] text-slate-500">Shaker</span>
+                </button>
+                <button onclick="resetWater()" class="py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-gymRose text-[10px] font-bold text-slate-400 hover:text-gymRose flex flex-col items-center">
+                  <span>Reset</span>
+                  <span class="text-[8px] text-slate-500">0ml</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Daily Nutrition Summary -->
             <div class="p-4 rounded-2xl bg-[#101422] border border-gymCardBorder space-y-3">
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-white flex items-center space-x-1.5">
-                  <i class="fa-solid fa-fire text-gymRose"></i>
-                  <span>Daily Calorie &amp; Macro Fuel</span>
+                  <i class="fa-solid fa-utensils text-gymEmerald"></i>
+                  <span>Coach Assigned Diet Plan</span>
                 </span>
-                <span class="text-[10px] font-mono text-gymCyan font-bold">2100 kcal Target</span>
+                <span class="text-[10px] font-mono text-gymCyan font-bold" id="homeCalorieBadge">2100 kcal Target</span>
               </div>
-
-              <div class="space-y-2 text-xs">
-                <div>
-                  <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                    <span>Protein</span>
-                    <span class="text-gymCyan font-bold">180g / 180g</span>
-                  </div>
-                  <div class="h-2 rounded-full bg-slate-800 overflow-hidden">
-                    <div class="h-full bg-gymCyan rounded-full w-[85%]"></div>
-                  </div>
-                </div>
-                <div>
-                  <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                    <span>Carbs</span>
-                    <span class="text-gymEmerald font-bold">190g / 190g</span>
-                  </div>
-                  <div class="h-2 rounded-full bg-slate-800 overflow-hidden">
-                    <div class="h-full bg-gymEmerald rounded-full w-[70%]"></div>
-                  </div>
-                </div>
-                <div>
-                  <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                    <span>Fat</span>
-                    <span class="text-gymAmber font-bold">60g / 60g</span>
-                  </div>
-                  <div class="h-2 rounded-full bg-slate-800 overflow-hidden">
-                    <div class="h-full bg-gymAmber rounded-full w-[55%]"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Quick Action Shortcuts -->
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <button onclick="switchMemberNavTab('workouts')" class="p-3 rounded-2xl bg-[#101422] border border-slate-800 hover:border-gymCyan text-left space-y-1">
-                <i class="fa-solid fa-trophy text-yellow-400 text-sm"></i>
-                <div class="font-bold text-white text-xs">Workouts &amp; PRs</div>
-                <div class="text-[9px] text-slate-400">Log Personal Bests</div>
-              </button>
-              <button onclick="switchMemberNavTab('classes')" class="p-3 rounded-2xl bg-[#101422] border border-slate-800 hover:border-gymEmerald text-left space-y-1">
-                <i class="fa-solid fa-calendar-check text-gymEmerald text-sm"></i>
-                <div class="font-bold text-white text-xs">Book Classes</div>
-                <div class="text-[9px] text-slate-400">Reserve spot in class</div>
-              </button>
-            </div>
-          </div>
-
-          <!-- SUB-TAB 2: WORKOUTS & PERSONAL BESTS (PRs) -->
-          <div id="memberWorkoutsSubScreen" class="hidden space-y-3.5">
-            <div class="flex items-center justify-between">
-              <h2 class="text-sm font-black tracking-wider text-white">WORKOUTS &amp; PERSONAL BESTS</h2>
-              <button onclick="openModal('modalLogPr')" class="px-2.5 py-1 rounded-xl bg-gymCyan text-black font-bold text-xs hover:bg-cyan-300">
-                + Log PR
-              </button>
-            </div>
-
-            <!-- Personal Bests Grid -->
-            <div class="p-3 rounded-2xl bg-[#101422] border border-gymCardBorder space-y-2">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">🏆 Recorded Personal Records</span>
-              <div class="grid grid-cols-2 gap-2" id="memberPrGrid">
+              <div id="homeMealsPreviewList" class="space-y-2">
                 <!-- Dynamically populated -->
               </div>
             </div>
+          </div>
 
-            <!-- Workout Routine Checklist -->
+          <!-- MEMBER SUB-TAB 2: WORKOUTS & GLOWING MUSCLE ANATOMY -->
+          <div id="memberWorkoutsSubScreen" class="hidden space-y-3.5">
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-sm font-black tracking-wider text-white">TODAY'S WORKOUT PLAN</h2>
+                <span class="text-[10px] text-slate-400 font-mono">Assigned by coach • Click complete to activate muscles</span>
+              </div>
+              <button onclick="openModal('modalLogPr')" class="px-2 py-1 rounded-xl bg-gymCyan text-black font-bold text-[10px] hover:bg-cyan-300">
+                + PR
+              </button>
+            </div>
+
+            <!-- GLOWING MUSCLE ANATOMY BODY MAP COMPONENT -->
+            <div class="p-4 rounded-2xl bg-[#101422] border-2 border-gymCyan/40 shadow-[0_0_25px_rgba(0,243,255,0.2)] space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-black tracking-wider text-white flex items-center space-x-1.5">
+                  <i class="fa-solid fa-child text-gymCyan animate-pulse"></i>
+                  <span>GLOWING MUSCLE ANATOMY</span>
+                </span>
+                <span class="text-[9px] font-mono text-gymCyan bg-gymCyan/10 border border-gymCyan/30 px-2 py-0.5 rounded-full font-bold" id="activeMuscleCountBadge">
+                  2 Zones Active
+                </span>
+              </div>
+
+              <!-- Stylized Muscle Anatomy Body Map -->
+              <div class="relative w-full py-2 flex items-center justify-center">
+                <svg viewBox="0 0 200 240" class="w-48 h-56 select-none">
+                  <!-- Head -->
+                  <circle cx="100" cy="22" r="14" fill="#1e2538" stroke="#2d3748" stroke-width="1.2"/>
+                  <!-- Neck -->
+                  <rect x="94" y="36" width="12" height="8" rx="2" fill="#1e2538"/>
+
+                  <!-- SHOULDERS / DELTOIDS -->
+                  <path id="muscle_shoulders_l" class="muscle-part inactive" d="M 78 44 C 68 44 64 54 62 64 C 70 62 76 56 78 44 Z" />
+                  <path id="muscle_shoulders_r" class="muscle-part inactive" d="M 122 44 C 132 44 136 54 138 64 C 130 62 124 56 122 44 Z" />
+
+                  <!-- CHEST / PECTORALS -->
+                  <path id="muscle_chest_l" class="muscle-part active" d="M 80 46 C 88 46 98 48 98 68 C 86 68 76 64 80 46 Z" />
+                  <path id="muscle_chest_r" class="muscle-part active" d="M 120 46 C 112 46 102 48 102 68 C 114 68 124 64 120 46 Z" />
+
+                  <!-- ARMS - BICEPS -->
+                  <path id="muscle_biceps_l" class="muscle-part inactive" d="M 60 66 C 56 76 54 90 52 98 C 58 98 62 86 62 66 Z" />
+                  <path id="muscle_biceps_r" class="muscle-part inactive" d="M 140 66 C 144 76 146 90 148 98 C 142 98 138 86 138 66 Z" />
+
+                  <!-- ARMS - TRICEPS / FOREARMS -->
+                  <path id="muscle_triceps_l" class="muscle-part active" d="M 50 100 C 46 114 42 128 40 138 C 46 138 52 124 52 100 Z" />
+                  <path id="muscle_triceps_r" class="muscle-part active" d="M 150 100 C 154 114 158 128 160 138 C 154 138 148 124 148 100 Z" />
+
+                  <!-- CORE / ABS -->
+                  <path id="muscle_core" class="muscle-part inactive" d="M 86 72 C 100 70 114 70 114 72 C 112 96 110 112 110 116 C 100 118 90 116 86 116 C 86 112 84 96 86 72 Z" />
+
+                  <!-- BACK / LATS (Side wings) -->
+                  <path id="muscle_back_l" class="muscle-part inactive" d="M 76 66 C 72 78 74 94 78 102 C 82 94 82 78 80 66 Z" />
+                  <path id="muscle_back_r" class="muscle-part inactive" d="M 124 66 C 128 78 126 94 122 102 C 118 94 118 78 120 66 Z" />
+
+                  <!-- HIPS & GLUTES -->
+                  <path id="muscle_glutes" class="muscle-part inactive" d="M 82 118 C 100 118 118 118 118 122 C 120 136 114 144 110 146 C 100 144 90 144 90 146 C 86 144 80 136 82 118 Z" />
+
+                  <!-- QUADS (Front Thighs) -->
+                  <path id="muscle_quads_l" class="muscle-part inactive" d="M 82 148 C 88 152 94 168 94 186 C 86 186 76 166 78 148 Z" />
+                  <path id="muscle_quads_r" class="muscle-part inactive" d="M 118 148 C 112 152 106 168 106 186 C 114 186 124 166 122 148 Z" />
+
+                  <!-- HAMSTRINGS & CALVES -->
+                  <path id="muscle_calves_l" class="muscle-part inactive" d="M 78 190 C 82 200 84 218 84 232 C 78 232 74 216 76 190 Z" />
+                  <path id="muscle_calves_r" class="muscle-part inactive" d="M 122 190 C 118 200 116 218 116 232 C 122 232 126 216 124 190 Z" />
+                </svg>
+              </div>
+
+              <!-- Activated Muscle Legend Chips -->
+              <div class="flex flex-wrap gap-1.5 justify-center text-[9px] font-mono" id="muscleChipsList">
+                <span class="px-2 py-0.5 rounded-full bg-gymCyan/20 text-gymCyan border border-gymCyan/40 font-bold">Chest (High)</span>
+                <span class="px-2 py-0.5 rounded-full bg-gymEmerald/20 text-gymEmerald border border-gymEmerald/40 font-bold">Triceps (Med)</span>
+              </div>
+            </div>
+
+            <!-- Assigned Workouts List (Checklist that lights up muscles) -->
             <div class="p-3 rounded-2xl bg-[#101422] border border-gymCardBorder space-y-2">
               <div class="flex justify-between items-center">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Today's Prescribed Training</span>
-                <span class="text-[10px] font-mono text-gymCyan" id="memberWorkoutProgressText">2 / 4 Done</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Assigned Exercises for Today</span>
+                <span class="text-[10px] font-mono text-gymCyan" id="memberWorkoutProgressText">2 / 4 Completed</span>
               </div>
               <div id="memberWorkoutChecklist" class="space-y-2">
                 <!-- Dynamically populated -->
               </div>
             </div>
+
+            <!-- Recorded Personal Bests (PRs) -->
+            <div class="p-3 rounded-2xl bg-[#101422] border border-gymCardBorder space-y-2">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">🏆 My Personal Records</span>
+              <div class="grid grid-cols-2 gap-2" id="memberPrGrid">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
           </div>
 
-          <!-- SUB-TAB 3: DIET & MEALS -->
+          <!-- MEMBER SUB-TAB 3: DIET & MEAL CHECKLIST -->
           <div id="memberDietSubScreen" class="hidden space-y-3.5">
-            <h2 class="text-sm font-black tracking-wider text-white">DAILY MEAL CHECKLIST</h2>
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-sm font-black tracking-wider text-white">MY DIET PLAN</h2>
+                <span class="text-[10px] text-slate-400 font-mono">Assigned by coach • Click meal to mark consumed</span>
+              </div>
+            </div>
             <div id="memberMealsList" class="space-y-2.5">
               <!-- Dynamically populated -->
             </div>
           </div>
 
-          <!-- SUB-TAB 4: CLASSES -->
-          <div id="memberClassesSubScreen" class="hidden space-y-3.5">
-            <h2 class="text-sm font-black tracking-wider text-white">GROUP FITNESS &amp; STRENGTH</h2>
-            <div id="memberBookingClassList" class="space-y-2.5">
-              <!-- Dynamically populated -->
-            </div>
-          </div>
-
-          <!-- SUB-TAB 5: DIGITAL PASS -->
+          <!-- MEMBER SUB-TAB 4: DIGITAL PASS -->
           <div id="memberPassSubScreen" class="hidden flex flex-col items-center justify-center p-4 text-center space-y-3">
             <div class="w-full max-w-xs p-6 rounded-3xl bg-gradient-to-b from-[#101422] to-[#0a0d16] border-2 border-gymCyan/50 shadow-[0_0_35px_rgba(0,243,255,0.25)] space-y-4">
               <div class="flex justify-between items-center">
@@ -676,27 +737,31 @@
                 <span class="text-[9px] font-mono text-gymEmerald bg-gymEmerald/10 px-2 py-0.5 rounded-full border border-gymEmerald/30">ACTIVE</span>
               </div>
 
-              <!-- QR Code Representation -->
               <div class="w-40 h-40 bg-white rounded-2xl p-3 mx-auto flex flex-col items-center justify-center shadow-lg">
                 <i class="fa-solid fa-qrcode text-7xl text-black"></i>
-                <span class="text-[8px] font-mono text-black font-black mt-1">IP-9842-VALID</span>
+                <span class="text-[8px] font-mono text-black font-black mt-1" id="passCodeId">IP-ALEX-9842</span>
               </div>
 
               <div class="text-xs text-left space-y-1.5 border-t border-slate-800 pt-3">
                 <div class="flex justify-between"><span class="text-slate-400">Athlete:</span><span class="text-white font-bold" id="passAthleteName">Alex Rivera</span></div>
                 <div class="flex justify-between"><span class="text-slate-400">Subscription:</span><span class="text-gymEmerald font-mono font-bold" id="passDaysLeft">18 Days Remaining</span></div>
-                <div class="flex justify-between"><span class="text-slate-400">Facility ID:</span><span class="text-gymCyan font-mono">IRON-HQ-BAY-1</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Gym Access:</span><span class="text-gymCyan font-mono">ALL-HOURS VIP</span></div>
               </div>
             </div>
           </div>
 
-          <!-- SUB-TAB 6: ANALYTICS -->
+          <!-- MEMBER SUB-TAB 5: STATS & BMI -->
           <div id="memberAnalyticsSubScreen" class="hidden space-y-3.5">
-            <h2 class="text-sm font-black tracking-wider text-white">BODY METRICS &amp; BMI</h2>
+            <div class="flex justify-between items-center">
+              <h2 class="text-sm font-black tracking-wider text-white">BODY METRICS &amp; BMI</h2>
+              <button onclick="openProfileEditModal()" class="text-gymCyan text-xs font-bold hover:underline">Update Weight</button>
+            </div>
             <div class="p-4 rounded-2xl bg-[#101422] border border-gymCardBorder space-y-3 text-center">
               <div class="text-2xl font-black font-mono text-gymCyan" id="analyticsBmiVal">BMI 25.6</div>
               <span class="text-xs font-bold px-3 py-1 rounded-full bg-gymAmber/20 text-gymAmber border border-gymAmber/40" id="analyticsBmiCat">Overweight</span>
-              <div class="text-xs text-slate-400 mt-2">Current Weight: <span class="text-white font-bold" id="analyticsWeightVal">81.0 kg</span> • Height: 178 cm</div>
+              <div class="text-xs text-slate-400 mt-2">
+                Weight: <strong class="text-white" id="analyticsWeightVal">81.0 kg</strong> • Height: <strong class="text-white" id="analyticsHeightVal">178 cm</strong>
+              </div>
             </div>
           </div>
         </div>
@@ -707,19 +772,19 @@
       <!-- MOBILE APP BOTTOM NAVIGATION BAR           -->
       <!-- ========================================== -->
       <div id="phoneBottomNav" class="hidden h-16 bg-[#090a0f] border-t border-gymCardBorder px-2 flex items-center justify-around select-none shrink-0 z-20">
-        <!-- Coach Tabs -->
+        <!-- Coach Tabs (Roster, Nutrition, Workouts, Billing, Audit) -->
         <div id="coachNavRow" class="hidden w-full flex items-center justify-around">
           <button onclick="switchCoachNavTab('roster')" id="navCoachRoster" class="flex flex-col items-center text-gymCyan text-xs py-1">
             <i class="fa-solid fa-users text-sm mb-1"></i>
             <span class="text-[9px] font-bold">Roster</span>
           </button>
           <button onclick="switchCoachNavTab('protocol')" id="navCoachProtocol" class="flex flex-col items-center text-slate-400 hover:text-white text-xs py-1">
-            <i class="fa-solid fa-clipboard-list text-sm mb-1"></i>
-            <span class="text-[9px] font-bold">Protocol</span>
+            <i class="fa-solid fa-utensils text-sm mb-1"></i>
+            <span class="text-[9px] font-bold">Diet &amp; AI</span>
           </button>
-          <button onclick="switchCoachNavTab('schedule')" id="navCoachSchedule" class="flex flex-col items-center text-slate-400 hover:text-white text-xs py-1">
-            <i class="fa-solid fa-calendar-days text-sm mb-1"></i>
-            <span class="text-[9px] font-bold">Classes</span>
+          <button onclick="switchCoachNavTab('workouts')" id="navCoachWorkouts" class="flex flex-col items-center text-slate-400 hover:text-white text-xs py-1">
+            <i class="fa-solid fa-dumbbell text-sm mb-1"></i>
+            <span class="text-[9px] font-bold">Workouts</span>
           </button>
           <button onclick="switchCoachNavTab('billing')" id="navCoachBilling" class="flex flex-col items-center text-slate-400 hover:text-white text-xs py-1">
             <i class="fa-solid fa-credit-card text-sm mb-1"></i>
@@ -731,23 +796,19 @@
           </button>
         </div>
 
-        <!-- Member Tabs -->
+        <!-- Member Tabs (Home, Workouts & Muscle, Diet, Pass, Stats) -->
         <div id="memberNavRow" class="hidden w-full flex items-center justify-around">
           <button onclick="switchMemberNavTab('home')" id="navMemberHome" class="flex flex-col items-center text-gymCyan text-xs py-1">
             <i class="fa-solid fa-house text-sm mb-1"></i>
             <span class="text-[9px] font-bold">Home</span>
           </button>
           <button onclick="switchMemberNavTab('workouts')" id="navMemberWorkouts" class="flex flex-col items-center text-slate-400 hover:text-white text-xs py-1">
-            <i class="fa-solid fa-dumbbell text-sm mb-1"></i>
-            <span class="text-[9px] font-bold">Workouts</span>
+            <i class="fa-solid fa-child text-sm mb-1"></i>
+            <span class="text-[9px] font-bold">Anatomy</span>
           </button>
           <button onclick="switchMemberNavTab('diet')" id="navMemberDiet" class="flex flex-col items-center text-slate-400 hover:text-white text-xs py-1">
             <i class="fa-solid fa-utensils text-sm mb-1"></i>
             <span class="text-[9px] font-bold">Diet</span>
-          </button>
-          <button onclick="switchMemberNavTab('classes')" id="navMemberClasses" class="flex flex-col items-center text-slate-400 hover:text-white text-xs py-1">
-            <i class="fa-solid fa-calendar text-sm mb-1"></i>
-            <span class="text-[9px] font-bold">Classes</span>
           </button>
           <button onclick="switchMemberNavTab('pass')" id="navMemberPass" class="flex flex-col items-center text-slate-400 hover:text-white text-xs py-1">
             <i class="fa-solid fa-qrcode text-sm mb-1"></i>
@@ -760,9 +821,7 @@
         </div>
       </div>
 
-      <!-- ========================================== -->
-      <!-- ANDROID GESTURE PILL BAR                   -->
-      <!-- ========================================== -->
+      <!-- Android Gesture Bar -->
       <div class="h-4 bg-[#090a0f] flex items-center justify-center shrink-0 z-30 select-none">
         <div class="w-32 h-1 bg-slate-700/80 rounded-full"></div>
       </div>
@@ -771,34 +830,199 @@
   </main>
 
   <!-- ============================================================== -->
-  <!-- MODAL 1: ADD MEMBER (COACH ACTION)                             -->
+  <!-- MODALS                                                         -->
   <!-- ============================================================== -->
+
+  <!-- MODAL: PROFILE & ACCOUNT DETAILS EDIT (MEMBER & COACH) -->
+  <div id="modalEditProfile" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+    <div class="w-full max-w-sm rounded-3xl bg-[#101422] border border-gymCyan/40 p-5 space-y-3">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-bold text-white flex items-center space-x-1.5">
+            <i class="fa-solid fa-user-gear text-gymCyan"></i>
+            <span>Edit Account Details</span>
+          </h3>
+          <span class="text-[10px] text-slate-400 font-mono">Modifiable by coach or exact member</span>
+        </div>
+        <button onclick="closeModal('modalEditProfile')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form onsubmit="handleSaveProfileEdit(event)" class="space-y-2.5">
+        <div>
+          <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Full Name</label>
+          <input type="text" id="editProfileName" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Current Wt (kg)</label>
+            <input type="number" step="0.5" id="editProfileWeight" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
+          </div>
+          <div>
+            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Height (cm)</label>
+            <input type="number" id="editProfileHeight" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Goal Phase</label>
+            <select id="editProfileGoalPhase" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
+              <option value="Cutting">Cutting</option>
+              <option value="Maintaining">Maintaining</option>
+              <option value="Lean Bulking">Lean Bulking</option>
+              <option value="Bulking">Bulking</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Challenge Level</label>
+            <select id="editProfileLevel" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+              <option value="Elite">Elite</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-gymCyan text-black font-bold text-xs hover:bg-cyan-300 transition">
+          Save Account Changes
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AI NUTRITION ANALYZER (COACH ACTION) -->
+  <div id="modalAiAnalyzer" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md hidden p-4 overflow-y-auto">
+    <div class="w-full max-w-md rounded-3xl bg-[#101422] border-2 border-gymCyan/50 p-6 space-y-4 shadow-[0_0_50px_rgba(0,243,255,0.3)] relative">
+      <button onclick="closeModal('modalAiAnalyzer')" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+      <div class="flex items-center space-x-2.5">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-gymCyan to-gymEmerald flex items-center justify-center text-black font-black text-lg">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-white">AI Client Nutrition Analysis</h3>
+          <p class="text-[10px] text-gymCyan font-mono" id="aiModalTargetClient">Analyzing: Alex Rivera (81kg, Cutting)</p>
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2 text-xs">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">AI Diagnostic Evaluation</div>
+        <p class="text-slate-300 text-[11px] leading-relaxed" id="aiAnalysisText">
+          Based on biometric metrics (81kg, 178cm, 26yo, Cutting Phase), BMR is estimated at 1,840 kcal with an active TDEE of 2,450 kcal. Recommending a controlled -350 kcal deficit with high protein retention (2.2g/kg) to maximize muscle sparing during fat loss.
+        </p>
+        <div class="grid grid-cols-4 gap-1 text-center pt-1 font-mono text-[10px]">
+          <div class="p-1 rounded-lg bg-[#101422] text-white">2,100 kcal</div>
+          <div class="p-1 rounded-lg bg-[#101422] text-gymCyan">180g P</div>
+          <div class="p-1 rounded-lg bg-[#101422] text-gymEmerald">190g C</div>
+          <div class="p-1 rounded-lg bg-[#101422] text-gymAmber">60g F</div>
+        </div>
+      </div>
+
+      <div class="space-y-1.5 text-xs">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Generated Meal Protocol</span>
+        <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1" id="aiGeneratedMealsPreview">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <button onclick="applyAndSendAiMealPlan()" class="w-full py-3 rounded-2xl bg-gradient-to-r from-gymCyan to-gymEmerald text-black font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:brightness-110 transition flex items-center justify-center space-x-2">
+        <i class="fa-solid fa-paper-plane"></i>
+        <span>Send Analyzed Meals to Client</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: ASSIGN DAILY WORKOUT (COACH ACTION) -->
+  <div id="modalAssignWorkout" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+    <div class="w-full max-w-sm rounded-3xl bg-[#101422] border border-gymCardBorder p-5 space-y-3">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-bold text-white">Assign Workout Exercise</h3>
+        <button onclick="closeModal('modalAssignWorkout')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleCoachAssignExercise(event)" class="space-y-2.5">
+        <div>
+          <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Exercise Name</label>
+          <input type="text" id="assignExName" required placeholder="e.g. Barbell Bench Press" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white">
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Sets</label>
+            <input type="number" id="assignExSets" required value="4" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
+          </div>
+          <div>
+            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Reps</label>
+            <input type="text" id="assignExReps" required value="8-10" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
+          </div>
+          <div>
+            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Weight</label>
+            <input type="text" id="assignExWeight" required value="75kg" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
+          </div>
+        </div>
+        <div>
+          <label class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Target Muscle Group (Ignites Anatomy)</label>
+          <select id="assignExMuscle" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
+            <option value="chest">Chest (Pectorals)</option>
+            <option value="back">Back (Lats &amp; Upper)</option>
+            <option value="shoulders">Shoulders (Deltoids)</option>
+            <option value="biceps">Biceps (Arms)</option>
+            <option value="triceps">Triceps (Arms)</option>
+            <option value="quads">Quads (Thighs)</option>
+            <option value="core">Core (Abs)</option>
+            <option value="glutes">Glutes &amp; Posterior</option>
+            <option value="calves">Calves</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-gymCyan text-black font-bold text-xs hover:bg-cyan-300">
+          Assign to Today's Plan
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD CUSTOM MEAL (COACH ACTION) -->
+  <div id="modalAddMeal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+    <div class="w-full max-w-sm rounded-3xl bg-[#101422] border border-gymCardBorder p-5 space-y-3">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-bold text-white">Add Prescribed Meal</h3>
+        <button onclick="closeModal('modalAddMeal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleCoachAddMeal(event)" class="space-y-2.5">
+        <input type="text" id="addMealName" required placeholder="Meal Name (e.g. Post-Workout Shake)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white">
+        <input type="text" id="addMealDesc" required placeholder="Description (e.g. 50g Whey, 1 Banana)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white">
+        <div class="grid grid-cols-2 gap-2">
+          <input type="number" id="addMealCal" required placeholder="Calories (kcal)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
+          <input type="number" id="addMealProt" required placeholder="Protein (g)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-gymEmerald text-black font-bold text-xs hover:bg-emerald-400">Save Meal Plan</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD MEMBER (COACH ACTION) -->
   <div id="modalAddMember" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
     <div class="w-full max-w-sm rounded-3xl bg-[#101422] border border-gymCardBorder p-5 space-y-3">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-white">Add New Athlete</h3>
+        <h3 class="text-sm font-bold text-white">Add New Athlete to Roster</h3>
         <button onclick="closeModal('modalAddMember')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form onsubmit="handleCoachAddMember(event)" class="space-y-2.5">
-        <input type="text" id="addMemName" required placeholder="Full Name" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
-        <input type="email" id="addMemEmail" required placeholder="Email" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+        <input type="text" id="addMemName" required placeholder="Full Name" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white">
+        <input type="email" id="addMemEmail" required placeholder="Email" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white">
         <div class="grid grid-cols-2 gap-2">
-          <input type="number" id="addMemWeight" required placeholder="Weight (kg)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
-          <select id="addMemPhase" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-2 text-xs text-white">
+          <input type="number" id="addMemWeight" required placeholder="Weight (kg)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white">
+          <select id="addMemPhase" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-white">
             <option value="Cutting">Cutting</option>
             <option value="Maintaining">Maintaining</option>
             <option value="Lean Bulking">Lean Bulking</option>
             <option value="Bulking">Bulking</option>
           </select>
         </div>
-        <button type="submit" class="w-full py-2.5 rounded-xl bg-gymEmerald text-black font-bold text-xs hover:bg-emerald-400">Save Member Profile</button>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-gymEmerald text-black font-bold text-xs hover:bg-emerald-400">Save Athlete</button>
       </form>
     </div>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- MODAL 2: LOG PERSONAL BEST (PR)                                -->
-  <!-- ============================================================== -->
+  <!-- MODAL: LOG PR -->
   <div id="modalLogPr" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
     <div class="w-full max-w-sm rounded-3xl bg-[#101422] border border-gymCardBorder p-5 space-y-3">
       <div class="flex justify-between items-center">
@@ -819,48 +1043,22 @@
     </div>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- MODAL 3: ADD CLASS                                             -->
-  <!-- ============================================================== -->
-  <div id="modalAddClass" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
-    <div class="w-full max-w-sm rounded-3xl bg-[#101422] border border-gymCardBorder p-5 space-y-3">
-      <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-white">Create Group Class</h3>
-        <button onclick="closeModal('modalAddClass')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <form onsubmit="handleCreateClass(event)" class="space-y-2.5">
-        <input type="text" id="newClassName" required placeholder="Class Name" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
-        <input type="text" id="newClassTime" required placeholder="Time (e.g. 06:30 PM)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
-        <input type="number" id="newClassCapacity" required placeholder="Max Capacity (e.g. 20)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
-        <button type="submit" class="w-full py-2.5 rounded-xl bg-gymCyan text-black font-bold text-xs hover:bg-cyan-300">Publish Class</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ============================================================== -->
-  <!-- MODAL 4: APK SHOWCASE & DOWNLOAD MODAL                         -->
-  <!-- ============================================================== -->
+  <!-- MODAL: APK SHOWCASE -->
   <div id="modalShowcase" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md hidden p-4 overflow-y-auto">
     <div class="w-full max-w-md rounded-3xl bg-[#101422] border border-gymCyan/40 p-6 space-y-4 shadow-[0_0_50px_rgba(0,243,255,0.25)] relative">
       <button onclick="toggleShowcaseModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
-      
       <div class="text-center space-y-1">
         <div class="w-12 h-12 rounded-2xl bg-gymCyan/10 border border-gymCyan/40 text-gymCyan text-xl mx-auto flex items-center justify-center mb-2">
           <i class="fa-solid fa-cloud-arrow-down"></i>
         </div>
         <h3 class="text-lg font-black text-white">Download IronPulse APK</h3>
-        <p class="text-xs text-slate-400">Universal Android Release (Android 6.0 to Android 16)</p>
+        <p class="text-xs text-slate-400">Universal Android Release (Android 6.0 through 16)</p>
       </div>
-
-      <!-- Specs Table -->
       <div class="rounded-2xl bg-slate-900/80 border border-slate-800 divide-y divide-slate-800 text-xs">
         <div class="p-2.5 flex justify-between"><span class="text-slate-400">Version:</span><span class="text-gymCyan font-mono">v2.4.0 Universal</span></div>
-        <div class="p-2.5 flex justify-between"><span class="text-slate-400">Package:</span><span class="text-white font-mono text-[10px]">com.aistudio.gympulse.rkpmyt</span></div>
-        <div class="p-2.5 flex justify-between"><span class="text-slate-400">Size:</span><span class="text-white">34.2 MB</span></div>
+        <div class="p-2.5 flex justify-between"><span class="text-slate-400">Features:</span><span class="text-white">AI Nutrition, Muscle Anatomy, Water Tracker</span></div>
         <div class="p-2.5 flex justify-between"><span class="text-slate-400">MultiDex:</span><span class="text-gymEmerald font-bold">Enabled</span></div>
       </div>
-
-      <!-- Download Button -->
       <button onclick="triggerApkDownload()" class="w-full py-3 rounded-xl bg-gradient-to-r from-gymCyan to-gymEmerald text-black font-black text-xs uppercase tracking-wider shadow-lg hover:brightness-110 transition-all flex items-center justify-center space-x-2">
         <i class="fa-solid fa-download"></i>
         <span>Download Sideload APK</span>
@@ -872,13 +1070,13 @@
   <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
   <!-- ============================================================== -->
-  <!-- JAVASCRIPT APPLICATION CORE                                    -->
+  <!-- JAVASCRIPT APPLICATION LOGIC                                   -->
   <!-- ============================================================== -->
   <script>
     // -------------------------------------------------------------
-    // Core Seed Data (Matching Kotlin Room Database Entities)
+    // Core Seed Data
     // -------------------------------------------------------------
-    const SEED_MEMBERS = [
+    const INITIAL_MEMBERS = [
       {
         id: 'coach_marcus_01',
         name: 'Coach Marcus',
@@ -897,6 +1095,7 @@
         proteinG: 210,
         carbsG: 300,
         fatG: 80,
+        waterIntakeMl: 2250,
         subscriptionDaysLeft: 90
       },
       {
@@ -917,6 +1116,7 @@
         proteinG: 180,
         carbsG: 190,
         fatG: 60,
+        waterIntakeMl: 1750,
         subscriptionDaysLeft: 18,
         prs: [
           { exercise: 'Bench Press', weight: 105, reps: 3, date: '10/28' },
@@ -925,16 +1125,16 @@
           { exercise: 'Overhead Press', weight: 70, reps: 5, date: '10/20' }
         ],
         workouts: [
-          { id: 'w1', exercise: 'Incline Barbell Press', sets: '4', reps: '8-10', weight: '70kg', completed: true },
-          { id: 'w2', exercise: 'Dumbbell Incline Flyes', sets: '3', reps: '12-15', weight: '18kg', completed: true },
-          { id: 'w3', exercise: 'Weighted Tricep Dips', sets: '4', reps: '10', weight: '15kg', completed: false },
-          { id: 'w4', exercise: 'Cable Rope Pushdowns', sets: '3', reps: '15', weight: '25kg', completed: false }
+          { id: 'w1', exercise: 'Incline Barbell Bench Press', sets: '4', reps: '8-10', weight: '70kg', muscleGroup: 'chest', completed: true },
+          { id: 'w2', exercise: 'Weighted Tricep Dips', sets: '3', reps: '12', weight: '15kg', muscleGroup: 'triceps', completed: true },
+          { id: 'w3', exercise: 'Dumbbell Incline Flyes', sets: '3', reps: '15', weight: '18kg', muscleGroup: 'chest', completed: false },
+          { id: 'w4', exercise: 'Cable Rope Pushdowns', sets: '4', reps: '15', weight: '25kg', muscleGroup: 'triceps', completed: false }
         ],
         meals: [
-          { id: 'm1', name: 'Meal 1: Power Breakfast', desc: '4 egg whites, 1 whole egg, 60g oats', completed: true },
-          { id: 'm2', name: 'Meal 2: Whey Isolate Shake', desc: '1 scoop Whey, 1 banana, almond milk', completed: true },
-          { id: 'm3', name: 'Meal 3: Lean Lunch', desc: '180g grilled chicken, 150g jasmine rice', completed: false },
-          { id: 'm4', name: 'Meal 4: High-Protein Dinner', desc: '200g salmon fillet, mixed salad', completed: false }
+          { id: 'm1', name: 'Meal 1: Power Breakfast', desc: '4 egg whites, 1 whole egg, 60g oats with berries', calories: 480, proteinG: 38, completed: true },
+          { id: 'm2', name: 'Meal 2: Whey Isolate Shake', desc: '1 scoop Whey, 1 banana, 300ml almond milk', calories: 310, proteinG: 32, completed: true },
+          { id: 'm3', name: 'Meal 3: Lean Lunch', desc: '180g grilled chicken breast, 150g jasmine rice', calories: 620, proteinG: 55, completed: false },
+          { id: 'm4', name: 'Meal 4: High-Protein Dinner', desc: '200g wild salmon fillet, garden salad, olive oil', calories: 690, proteinG: 52, completed: false }
         ]
       },
       {
@@ -955,69 +1155,34 @@
         proteinG: 140,
         carbsG: 280,
         fatG: 70,
+        waterIntakeMl: 2500,
         subscriptionDaysLeft: 3,
         prs: [
           { exercise: 'Hip Thrust', weight: 140, reps: 8, date: '10/30' },
           { exercise: 'Back Squat', weight: 95, reps: 5, date: '11/01' }
         ],
         workouts: [
-          { id: 'w1', exercise: 'Barbell Back Squat', sets: '4', reps: '6-8', weight: '65kg', completed: true },
-          { id: 'w2', exercise: 'Romanian Deadlifts', sets: '4', reps: '8-10', weight: '70kg', completed: true }
+          { id: 'w1', exercise: 'Barbell Back Squat', sets: '4', reps: '6-8', weight: '65kg', muscleGroup: 'quads', completed: true },
+          { id: 'w2', exercise: 'Romanian Deadlifts', sets: '4', reps: '8-10', weight: '70kg', muscleGroup: 'glutes', completed: true }
         ],
         meals: [
-          { id: 'm1', name: 'Meal 1: Oats & PB', desc: '80g oats, 2 tbsp PB, chia seeds', completed: true }
+          { id: 'm1', name: 'Meal 1: Oats & Peanut Butter', desc: '80g oats, 2 tbsp PB, chia seeds', calories: 520, proteinG: 25, completed: true }
         ]
-      },
-      {
-        id: 'client_mike_03',
-        name: 'Mike Ross',
-        email: 'newbie@fitgym.com',
-        password: '123456',
-        role: 'MEMBER',
-        approved: false,
-        atGym: false,
-        gender: 'Male',
-        age: 30,
-        currentWeight: 92,
-        heightCm: 180,
-        goalPhase: 'Cutting',
-        challengeLevel: 'Beginner',
-        dailyCalories: 2200,
-        proteinG: 170,
-        carbsG: 180,
-        fatG: 65,
-        subscriptionDaysLeft: 30,
-        prs: [],
-        workouts: [],
-        meals: []
       }
     ];
 
-    const SEED_CLASSES = [
-      { id: 'c1', name: 'Morning HIIT Blitz', time: '07:00 AM', coach: 'Marcus Vance', capacity: 20, booked: 16, room: 'Studio A' },
-      { id: 'c2', name: 'Powerlifting Masters', time: '09:30 AM', coach: 'Elena Rostova', capacity: 12, booked: 10, room: 'Iron Bay' },
-      { id: 'c3', name: 'Vinyasa Recovery Flow', time: '12:00 PM', coach: 'Sarah Jenkins', capacity: 25, booked: 18, room: 'Mind & Body' },
-      { id: 'c4', name: 'Spin & Sculpt Circuit', time: '05:30 PM', coach: 'Marcus Vance', capacity: 18, booked: 18, room: 'Cycle Lab' },
-      { id: 'c5', name: 'Iron Strength & Conditioning', time: '07:00 PM', coach: 'Dave Miller', capacity: 15, booked: 11, room: 'Main Floor' }
-    ];
-
-    // State Variables
-    let members = JSON.parse(localStorage.getItem('ironpulse_web_members')) || SEED_MEMBERS;
-    let classes = JSON.parse(localStorage.getItem('ironpulse_web_classes')) || SEED_CLASSES;
-    let currentUser = null; // null if unauthenticated
-    let activeRole = 'COACH'; // 'COACH' or 'MEMBER'
+    let members = JSON.parse(localStorage.getItem('ironpulse_v3_members')) || INITIAL_MEMBERS;
+    let currentUser = null; // null = unauthenticated
+    let coachSelectedMemberId = 'client_alex_01';
     let currentCoachNavTab = 'roster';
     let currentMemberNavTab = 'home';
-    let rosterFilterMode = 'ALL';
     let auditLogs = [
       { time: '10:14 AM', text: 'IronPulse Gym Management Engine initialized on device.' },
-      { time: '11:20 AM', text: 'Sarah Jenkins checked in to the gym facility 📍' },
-      { time: '12:05 PM', text: 'New member registration: Mike Ross (Pending Approval).' }
+      { time: '11:20 AM', text: 'Sarah Jenkins checked in to the gym facility 📍' }
     ];
 
     function saveState() {
-      localStorage.setItem('ironpulse_web_members', JSON.stringify(members));
-      localStorage.setItem('ironpulse_web_classes', JSON.stringify(classes));
+      localStorage.setItem('ironpulse_v3_members', JSON.stringify(members));
     }
 
     function showToast(msg, type = 'cyan') {
@@ -1056,7 +1221,6 @@
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const now = audioCtx.currentTime;
 
-        // Sub-bass sweep
         const osc1 = audioCtx.createOscillator();
         const g1 = audioCtx.createGain();
         osc1.type = 'sine';
@@ -1070,7 +1234,6 @@
         osc1.start(now);
         osc1.stop(now + 1.2);
 
-        // Chimes
         [440, 659].forEach((freq, idx) => {
           const osc2 = audioCtx.createOscillator();
           const g2 = audioCtx.createGain();
@@ -1118,9 +1281,6 @@
       setTimeout(() => { intro.style.display = 'none'; }, 700);
     }
 
-    // -------------------------------------------------------------
-    // Viewport Mode Switcher (Phone Frame vs Fullscreen)
-    // -------------------------------------------------------------
     function toggleViewportMode(mode) {
       const phone = document.getElementById('phoneFrame');
       const btnPhone = document.getElementById('viewPhoneBtn');
@@ -1137,9 +1297,6 @@
       }
     }
 
-    // -------------------------------------------------------------
-    // Auth Tab Switcher (Sign In vs Sign Up)
-    // -------------------------------------------------------------
     function switchAuthTab(tab) {
       const btnIn = document.getElementById('authTabSignInBtn');
       const btnUp = document.getElementById('authTabSignUpBtn');
@@ -1167,7 +1324,7 @@
     }
 
     // -------------------------------------------------------------
-    // Authentication Operations
+    // Authentication Operations (Specific Individual Accounts)
     // -------------------------------------------------------------
     function fillAndSignIn(email, pass) {
       document.getElementById('inputSignInEmail').value = email;
@@ -1185,27 +1342,18 @@
     function executeSignIn(email, pass) {
       const user = members.find(m => m.email.toLowerCase() === email.toLowerCase());
       if (!user) {
-        showAuthAlert("Invalid credentials. Account not found.", "rose");
+        showAuthAlert("Account not found. Please check your email or register.", "rose");
         return;
       }
       if (user.password && user.password !== pass) {
-        showAuthAlert("Incorrect password. Please verify and try again.", "rose");
+        showAuthAlert("Incorrect password. Please verify credentials.", "rose");
         return;
       }
 
       currentUser = user;
-      activeRole = user.role;
-
-      // Check if account is still pending approval
-      if (!user.approved) {
-        showPendingApplicantScreen(user);
-        return;
-      }
-
-      // Successful login
-      recordAudit(`${user.name} logged in as ${user.role} (${user.email})`);
-      renderAuthenticatedApp();
-      showToast(`Welcome back, ${user.name}!`, 'emerald');
+      recordAudit(`${user.name} logged in (${user.role})`);
+      renderAuthenticatedShell();
+      showToast(`Signed into personal account: ${user.name}`, 'emerald');
     }
 
     function handleManualSignUp(e) {
@@ -1215,7 +1363,7 @@
       const password = document.getElementById('signUpPasswordInput').value;
       const role = document.querySelector('input[name="signUpRoleOption"]:checked').value;
       const weight = parseFloat(document.getElementById('signUpWeightInput').value) || 75;
-      const height = parseFloat(document.getElementById('signUpHeightInput').value) || 178;
+      const height = parseFloat(document.getElementById('signUpHeightInput').value) || 176;
       const age = parseInt(document.getElementById('signUpAgeInput').value, 10) || 25;
       const goalPhase = document.getElementById('signUpGoalPhaseInput').value;
       const challengeLevel = document.getElementById('signUpLevelInput').value;
@@ -1232,7 +1380,7 @@
         email,
         password,
         role,
-        approved: false, // Must be approved by coach
+        approved: true,
         atGym: false,
         gender: 'Male',
         age,
@@ -1244,25 +1392,25 @@
         proteinG: 175,
         carbsG: 190,
         fatG: 65,
+        waterIntakeMl: 0,
         subscriptionDaysLeft: 30,
         prs: [],
         workouts: [
-          { id: 'w1', exercise: 'Foundation Movement Assessment', sets: '3', reps: '10', weight: 'Bodyweight', completed: false }
+          { id: 'w1', exercise: 'Incline Dumbbell Press', sets: '3', reps: '10', weight: '20kg', muscleGroup: 'chest', completed: false },
+          { id: 'w2', exercise: 'Lat Pulldowns', sets: '4', reps: '12', weight: '45kg', muscleGroup: 'back', completed: false }
         ],
         meals: [
-          { id: 'm1', name: 'Meal 1: Morning Protein Oats', desc: '60g oats, berries, 30g whey isolate', completed: false }
+          { id: 'm1', name: 'Meal 1: Morning Oats & Whey', desc: '60g rolled oats, 30g whey isolate, berries', calories: 450, proteinG: 34, completed: false },
+          { id: 'm2', name: 'Meal 2: Chicken & Brown Rice', desc: '180g grilled chicken, 150g brown rice, greens', calories: 600, proteinG: 52, completed: false }
         ]
       };
 
       members.push(newMember);
       saveState();
-      recordAudit(`New registration: ${name} (${email}) as ${role} [Pending Approval]`);
-
-      showAuthAlert("Registration successful! Account pending coach verification.", "emerald");
-      setTimeout(() => {
-        currentUser = newMember;
-        showPendingApplicantScreen(newMember);
-      }, 1000);
+      currentUser = newMember;
+      recordAudit(`New account created: ${name} (${role})`);
+      renderAuthenticatedShell();
+      showToast(`Account created and signed in as ${name}!`, 'emerald');
     }
 
     function showAuthAlert(msg, color) {
@@ -1272,70 +1420,87 @@
       alert.classList.remove('hidden');
     }
 
-    function showPendingApplicantScreen(user) {
-      hideAllScreens();
-      document.getElementById('screenPendingApplicant').classList.remove('hidden');
-      document.getElementById('pendingApplicantName').innerText = user.name;
-      document.getElementById('pendingApplicantEmail').innerText = user.email;
-    }
-
     function signOut() {
       currentUser = null;
-      hideAllScreens();
       document.getElementById('phoneHeader').classList.add('hidden');
       document.getElementById('phoneBottomNav').classList.add('hidden');
-      document.getElementById('screenAuth').classList.remove('hidden');
-      showToast("Signed out successfully.");
-    }
-
-    function hideAllScreens() {
-      document.getElementById('screenAuth').classList.add('hidden');
-      document.getElementById('screenPendingApplicant').classList.add('hidden');
       document.getElementById('screenCoachPortal').classList.add('hidden');
       document.getElementById('screenMemberPortal').classList.add('hidden');
+      document.getElementById('screenAuth').classList.remove('hidden');
+      showToast("Signed out.");
     }
 
     // -------------------------------------------------------------
-    // Authenticated App Shell & Header Rendering
+    // Authenticated Shell & Strict Account Isolation
     // -------------------------------------------------------------
-    function renderAuthenticatedApp() {
-      hideAllScreens();
+    function renderAuthenticatedShell() {
+      document.getElementById('screenAuth').classList.add('hidden');
       document.getElementById('phoneHeader').classList.remove('hidden');
       document.getElementById('phoneBottomNav').classList.remove('hidden');
 
-      // Update header details
       document.getElementById('headerUserName').innerText = currentUser.name;
       const roleBadge = document.getElementById('headerRoleBadge');
-      roleBadge.innerText = activeRole;
-      if (activeRole === 'COACH') {
+      roleBadge.innerText = currentUser.role;
+
+      if (currentUser.role === 'COACH') {
         roleBadge.className = "text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-gymCyan/20 text-gymCyan border border-gymCyan/40 font-bold";
-        document.getElementById('roleToggleText').innerText = "Member Mode";
         document.getElementById('coachNavRow').classList.remove('hidden');
         document.getElementById('memberNavRow').classList.add('hidden');
         document.getElementById('screenCoachPortal').classList.remove('hidden');
-        renderCoachSubScreen(currentCoachNavTab);
+        document.getElementById('screenMemberPortal').classList.add('hidden');
+        switchCoachNavTab(currentCoachNavTab);
       } else {
         roleBadge.className = "text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-gymEmerald/20 text-gymEmerald border border-gymEmerald/40 font-bold";
-        document.getElementById('roleToggleText').innerText = "Coach Mode";
         document.getElementById('coachNavRow').classList.add('hidden');
         document.getElementById('memberNavRow').classList.remove('hidden');
+        document.getElementById('screenCoachPortal').classList.add('hidden');
         document.getElementById('screenMemberPortal').classList.remove('hidden');
-        renderMemberSubScreen(currentMemberNavTab);
+        switchMemberNavTab(currentMemberNavTab);
       }
     }
 
-    function toggleRoleSwitch() {
-      activeRole = activeRole === 'COACH' ? 'MEMBER' : 'COACH';
-      renderAuthenticatedApp();
-      showToast(`Switched to ${activeRole} Portal View.`);
+    // -------------------------------------------------------------
+    // Profile Details Editing (Exact Member or Coach)
+    // -------------------------------------------------------------
+    let targetProfileEditUser = null;
+
+    function openProfileEditModal(targetUser = null) {
+      targetProfileEditUser = targetUser || currentUser;
+      document.getElementById('editProfileName').value = targetProfileEditUser.name;
+      document.getElementById('editProfileWeight').value = targetProfileEditUser.currentWeight || 75;
+      document.getElementById('editProfileHeight').value = targetProfileEditUser.heightCm || 178;
+      document.getElementById('editProfileGoalPhase').value = targetProfileEditUser.goalPhase || 'Cutting';
+      document.getElementById('editProfileLevel').value = targetProfileEditUser.challengeLevel || 'Intermediate';
+      openModal('modalEditProfile');
+    }
+
+    function handleSaveProfileEdit(e) {
+      e.preventDefault();
+      if (!targetProfileEditUser) return;
+      targetProfileEditUser.name = document.getElementById('editProfileName').value.trim();
+      targetProfileEditUser.currentWeight = parseFloat(document.getElementById('editProfileWeight').value) || 75;
+      targetProfileEditUser.heightCm = parseFloat(document.getElementById('editProfileHeight').value) || 178;
+      targetProfileEditUser.goalPhase = document.getElementById('editProfileGoalPhase').value;
+      targetProfileEditUser.challengeLevel = document.getElementById('editProfileLevel').value;
+
+      members = members.map(m => m.id === targetProfileEditUser.id ? targetProfileEditUser : m);
+      saveState();
+      closeModal('modalEditProfile');
+      recordAudit(`Account profile details updated for ${targetProfileEditUser.name}`);
+
+      if (currentUser.id === targetProfileEditUser.id) {
+        document.getElementById('headerUserName').innerText = currentUser.name;
+      }
+      renderAuthenticatedShell();
+      showToast("Account details updated successfully!", 'emerald');
     }
 
     // -------------------------------------------------------------
-    // Coach Portal Navigation & Sub-Screens
+    // Coach Portal Operations
     // -------------------------------------------------------------
     function switchCoachNavTab(tab) {
       currentCoachNavTab = tab;
-      ['roster', 'protocol', 'schedule', 'billing', 'audit'].forEach(t => {
+      ['roster', 'protocol', 'workouts', 'billing', 'audit'].forEach(t => {
         const btn = document.getElementById(`navCoach${t.charAt(0).toUpperCase() + t.slice(1)}`);
         const screen = document.getElementById(`coach${t.charAt(0).toUpperCase() + t.slice(1)}SubScreen`);
         if (t === tab) {
@@ -1352,23 +1517,19 @@
     function renderCoachSubScreen(tab) {
       if (tab === 'roster') renderCoachRoster();
       else if (tab === 'protocol') renderCoachProtocol();
-      else if (tab === 'schedule') renderCoachSchedule();
+      else if (tab === 'workouts') renderCoachWorkouts();
       else if (tab === 'billing') renderCoachBilling();
       else if (tab === 'audit') renderCoachAudit();
     }
 
-    function setRosterFilter(filter) {
-      rosterFilterMode = filter;
-      ['ALL', 'AT_GYM', 'PENDING', 'ACTIVE'].forEach(f => {
-        const id = f === 'ALL' ? 'filterAll' : f === 'AT_GYM' ? 'filterAtGym' : f === 'PENDING' ? 'filterPending' : 'filterActive';
-        const el = document.getElementById(id);
-        if (f === filter) {
-          el.className = "px-3 py-1 rounded-full bg-gymCyan text-black font-bold shrink-0";
-        } else {
-          el.className = "px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white shrink-0";
-        }
-      });
-      renderCoachRoster();
+    function getCoachSelectedMember() {
+      return members.find(m => m.id === coachSelectedMemberId) || members.find(m => m.role === 'MEMBER') || members[0];
+    }
+
+    function setCoachSelectedMember(id) {
+      coachSelectedMemberId = id;
+      showToast(`Selected athlete: ${getCoachSelectedMember().name}`);
+      renderCoachSubScreen(currentCoachNavTab);
     }
 
     function filterRoster() {
@@ -1379,26 +1540,20 @@
       const container = document.getElementById('rosterCardsList');
       container.innerHTML = '';
       const query = (document.getElementById('rosterSearchInput').value || '').toLowerCase();
-
-      let filtered = members.filter(m => m.name.toLowerCase().includes(query) || m.email.toLowerCase().includes(query));
-      if (rosterFilterMode === 'AT_GYM') filtered = filtered.filter(m => m.atGym);
-      else if (rosterFilterMode === 'PENDING') filtered = filtered.filter(m => !m.approved);
-      else if (rosterFilterMode === 'ACTIVE') filtered = filtered.filter(m => m.approved);
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 font-mono">No matching athletes found.</div>`;
-        return;
-      }
+      const filtered = members.filter(m => m.name.toLowerCase().includes(query) || m.email.toLowerCase().includes(query));
 
       filtered.forEach(m => {
+        const isSelected = m.id === coachSelectedMemberId;
         const card = document.createElement('div');
-        card.className = "p-3.5 rounded-2xl bg-[#101422] border border-gymCardBorder space-y-2 hover:border-gymCyan/50 transition-all";
+        card.className = `p-3.5 rounded-2xl bg-[#101422] border ${isSelected ? 'border-gymCyan shadow-[0_0_15px_rgba(0,243,255,0.2)]' : 'border-gymCardBorder'} space-y-2 cursor-pointer hover:border-gymCyan/60 transition`;
+        card.onclick = () => setCoachSelectedMember(m.id);
+
         card.innerHTML = `
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <span class="text-xs font-bold text-white">${m.name}</span>
-              <span class="text-[9px] font-mono px-1.5 py-0.2 rounded-full ${m.approved ? 'bg-gymEmerald/20 text-gymEmerald border border-gymEmerald/30' : 'bg-gymAmber/20 text-gymAmber border border-gymAmber/30'}">
-                ${m.approved ? (m.role === 'COACH' ? 'COACH' : 'ACTIVE') : 'PENDING APPROVAL'}
+              <span class="text-[9px] font-mono px-1.5 py-0.2 rounded-full ${m.role === 'COACH' ? 'bg-gymCyan/20 text-gymCyan' : 'bg-gymEmerald/20 text-gymEmerald'} font-bold">
+                ${m.role}
               </span>
             </div>
             <span class="text-[9px] font-mono ${m.atGym ? 'text-gymEmerald font-bold' : 'text-slate-500'}">
@@ -1409,109 +1564,219 @@
           <div class="text-[11px] text-slate-400 flex justify-between">
             <span>Goal: <strong class="text-gymCyan">${m.goalPhase || 'Maintaining'}</strong></span>
             <span>Wt: <strong class="text-white">${m.currentWeight}kg</strong></span>
-            <span>Days Left: <strong class="${(m.subscriptionDaysLeft || 30) < 5 ? 'text-gymRose font-bold' : 'text-gymEmerald'}">${m.subscriptionDaysLeft || 30}d</strong></span>
+            <span>Hydration: <strong class="text-gymCyan font-mono">${m.waterIntakeMl || 0}ml</strong></span>
           </div>
 
-          ${!m.approved ? `
-            <div class="pt-2 border-t border-slate-800 flex items-center space-x-1.5">
-              <button onclick="approveMemberAsRole('${m.id}', 'COACH')" class="flex-1 py-1.5 rounded-lg bg-gymCyan text-black text-[10px] font-bold hover:bg-cyan-300 transition">
-                Approve as Coach
-              </button>
-              <button onclick="approveMemberAsRole('${m.id}', 'MEMBER')" class="flex-1 py-1.5 rounded-lg bg-gymEmerald text-black text-[10px] font-bold hover:bg-emerald-400 transition">
-                Approve as Member
-              </button>
-              <button onclick="rejectMember('${m.id}')" class="px-2 py-1.5 rounded-lg border border-gymRose/40 text-gymRose text-[10px] hover:bg-gymRose hover:text-white transition">
-                <i class="fa-solid fa-xmark"></i>
+          <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-[10px]">
+            <span class="text-slate-500">${m.email}</span>
+            <div class="flex space-x-2">
+              <button onclick="event.stopPropagation(); openProfileEditModal(members.find(x => x.id === '${m.id}'))" class="text-gymCyan font-bold hover:underline">
+                Edit Details
               </button>
             </div>
-          ` : `
-            <div class="pt-1.5 border-t border-slate-800/80 flex justify-between items-center text-[10px]">
-              <span class="text-slate-500">${m.email}</span>
-              <button onclick="renewMemberSubscription('${m.id}')" class="text-gymCyan font-bold hover:underline">
-                Renew 30d ($59.99)
-              </button>
-            </div>
-          `}
+          </div>
         `;
         container.appendChild(card);
       });
     }
 
-    function approveMemberAsRole(id, role) {
-      members = members.map(m => m.id === id ? { ...m, approved: true, role } : m);
-      saveState();
-      recordAudit(`Coach approved athlete (${id}) as ${role}`);
-      renderCoachRoster();
-      showToast(`Athlete approved live as ${role}!`, 'emerald');
-    }
-
-    function rejectMember(id) {
-      members = members.filter(m => m.id !== id);
-      saveState();
-      recordAudit(`Coach rejected application for ${id}`);
-      renderCoachRoster();
-      showToast(`Application declined.`, 'amber');
-    }
-
-    function renewMemberSubscription(id) {
-      members = members.map(m => m.id === id ? { ...m, subscriptionDaysLeft: (m.subscriptionDaysLeft || 0) + 30 } : m);
-      saveState();
-      recordAudit(`Subscription renewed (+30 days) for ${id}`);
-      renderCoachRoster();
-      renderCoachBilling();
-      showToast("Subscription fee processed (+30 days active)!", 'emerald');
-    }
-
     function renderCoachProtocol() {
-      const alex = members.find(m => m.id === 'client_alex_01') || members[0];
-      document.getElementById('protoMemberName').innerText = alex.name;
-      document.getElementById('protoGoalBadge').innerText = alex.goalPhase.toUpperCase();
-      document.getElementById('protoCalories').innerText = alex.dailyCalories || 2100;
-      document.getElementById('protoProtein').innerText = `${alex.proteinG || 180}g`;
-      document.getElementById('protoCarbs').innerText = `${alex.carbsG || 190}g`;
-      document.getElementById('protoFat').innerText = `${alex.fatG || 60}g`;
+      const athlete = getCoachSelectedMember();
+      document.getElementById('coachActiveClientSubtitle').innerText = `Managing: ${athlete.name} (${athlete.email})`;
+      document.getElementById('protoMemberName').innerText = athlete.name;
+      document.getElementById('protoGoalBadge').innerText = (athlete.goalPhase || 'Cutting').toUpperCase();
+      document.getElementById('protoCalories').innerText = athlete.dailyCalories || 2100;
+      document.getElementById('protoProtein').innerText = `${athlete.proteinG || 180}g`;
+      document.getElementById('protoCarbs').innerText = `${athlete.carbsG || 190}g`;
+      document.getElementById('protoFat').innerText = `${athlete.fatG || 60}g`;
+
+      const list = document.getElementById('coachPrescribedMealsList');
+      list.innerHTML = '';
+      const meals = athlete.meals || [];
+      if (meals.length === 0) {
+        list.innerHTML = `<div class="p-3 text-center text-slate-500 text-xs">No meals assigned. Use "Analyze with AI" above to generate a tailored plan!</div>`;
+      } else {
+        meals.forEach((m, idx) => {
+          const item = document.createElement('div');
+          item.className = "p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex justify-between items-center text-xs";
+          item.innerHTML = `
+            <div>
+              <div class="font-bold text-white">${m.name}</div>
+              <div class="text-[10px] text-slate-400">${m.desc}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-gymCyan font-mono font-bold">${m.calories} kcal</div>
+              <div class="text-[9px] text-slate-500 font-mono">${m.proteinG}g Prot</div>
+            </div>
+          `;
+          list.appendChild(item);
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // AI Client Nutrition Analyzer (Coach sends meal plan)
+    // -------------------------------------------------------------
+    let aiGeneratedMealsBuffer = [];
+
+    function triggerAiClientAnalysis() {
+      const athlete = getCoachSelectedMember();
+      document.getElementById('aiModalTargetClient').innerText = `Analyzing: ${athlete.name} (${athlete.currentWeight}kg, ${athlete.heightCm}cm, ${athlete.goalPhase})`;
+
+      // Calculate BMR & TDEE
+      const bw = athlete.currentWeight || 75;
+      const phase = athlete.goalPhase || 'Cutting';
+      let cal = 2100, prot = 180, carb = 190, fat = 60;
+
+      if (phase === 'Cutting') {
+        cal = Math.round(bw * 27);
+        prot = Math.round(bw * 2.2);
+        fat = Math.round(bw * 0.7);
+      } else if (phase === 'Lean Bulking') {
+        cal = Math.round(bw * 35);
+        prot = Math.round(bw * 2.2);
+        fat = Math.round(bw * 0.85);
+      } else if (phase === 'Bulking') {
+        cal = Math.round(bw * 38);
+        prot = Math.round(bw * 2.0);
+        fat = Math.round(bw * 1.0);
+      } else {
+        cal = Math.round(bw * 32);
+        prot = Math.round(bw * 2.0);
+        fat = Math.round(bw * 0.85);
+      }
+      carb = Math.round((cal - (prot * 4 + fat * 9)) / 4);
+
+      document.getElementById('aiAnalysisText').innerText = 
+        `AI Diagnostic Engine has analyzed ${athlete.name}'s biometrics (${bw}kg bodyweight, ${athlete.goalPhase} Phase). Basal metabolic needs calculated. Recommending a target of ${cal} kcal (${prot}g Protein, ${carb}g Carbs, ${fat}g Fat) with 4 distributed meals optimized for insulin sensitivity and muscle recovery.`;
+
+      aiGeneratedMealsBuffer = [
+        { id: `m_ai_${Date.now()}_1`, name: `AI Power Breakfast (${phase})`, desc: '4 egg whites, 1 whole omega-3 egg, 70g rolled oats with blueberries', calories: Math.round(cal * 0.25), proteinG: Math.round(prot * 0.25), completed: false },
+        { id: `m_ai_${Date.now()}_2`, name: `AI Midday Anabolic Shake`, desc: '1.5 scoops Whey Isolate, 1 banana, 30g crushed almonds, almond milk', calories: Math.round(cal * 0.20), proteinG: Math.round(prot * 0.25), completed: false },
+        { id: `m_ai_${Date.now()}_3`, name: `AI High-Protein Lean Lunch`, desc: '200g grilled lean chicken breast, 160g jasmine rice, steamed broccoli', calories: Math.round(cal * 0.30), proteinG: Math.round(prot * 0.30), completed: false },
+        { id: `m_ai_${Date.now()}_4`, name: `AI Recovery Dinner`, desc: '200g wild salmon fillet or sirloin steak, sweet potato mash, avocado salad', calories: Math.round(cal * 0.25), proteinG: Math.round(prot * 0.20), completed: false }
+      ];
+
+      const previewContainer = document.getElementById('aiGeneratedMealsPreview');
+      previewContainer.innerHTML = '';
+      aiGeneratedMealsBuffer.forEach(m => {
+        const item = document.createElement('div');
+        item.className = "p-2 rounded-xl bg-[#101422] border border-gymCyan/30 text-[11px] flex justify-between";
+        item.innerHTML = `
+          <div>
+            <div class="font-bold text-white">${m.name}</div>
+            <div class="text-[9px] text-slate-400">${m.desc}</div>
+          </div>
+          <div class="text-right shrink-0 ml-2">
+            <span class="text-gymCyan font-mono font-bold">${m.calories} kcal</span>
+          </div>
+        `;
+        previewContainer.appendChild(item);
+      });
+
+      openModal('modalAiAnalyzer');
+    }
+
+    function applyAndSendAiMealPlan() {
+      const athlete = getCoachSelectedMember();
+      athlete.meals = [...aiGeneratedMealsBuffer];
+      saveState();
+      closeModal('modalAiAnalyzer');
+      recordAudit(`Coach sent AI-analyzed nutrition plan to ${athlete.name}`);
+      renderCoachProtocol();
+      showToast(`AI Meal Plan successfully sent to ${athlete.name}'s account!`, 'emerald');
     }
 
     function coachAdjustPhase(phase) {
-      const alex = members.find(m => m.id === 'client_alex_01');
-      if (!alex) return;
-      const bw = alex.currentWeight || 75;
-      let cal = 2100, prot = 180, carb = 190, fat = 60;
-      if (phase === 'Cutting') { cal = Math.round(bw * 28); prot = Math.round(bw * 2.2); fat = Math.round(bw * 0.7); }
-      else if (phase === 'Lean Bulking') { cal = Math.round(bw * 35); prot = Math.round(bw * 2.2); fat = Math.round(bw * 0.85); }
-      else if (phase === 'Bulking') { cal = Math.round(bw * 38); prot = Math.round(bw * 2.0); fat = Math.round(bw * 1.0); }
-      else { cal = Math.round(bw * 32); prot = Math.round(bw * 2.0); fat = Math.round(bw * 0.85); }
-      carb = Math.round((cal - (prot * 4 + fat * 9)) / 4);
-
-      alex.goalPhase = phase;
-      alex.dailyCalories = cal;
-      alex.proteinG = prot;
-      alex.carbsG = carb;
-      alex.fatG = fat;
+      const athlete = getCoachSelectedMember();
+      athlete.goalPhase = phase;
       saveState();
       renderCoachProtocol();
-      recordAudit(`Coach adjusted protocol for ${alex.name} to ${phase}`);
-      showToast(`Macros recalculated for ${phase}: ${cal} kcal`, 'cyan');
+      recordAudit(`Coach updated goal phase to ${phase} for ${athlete.name}`);
+      showToast(`Phase updated to ${phase}! Click "Analyze with AI" to regenerate meals.`);
     }
 
-    function renderCoachSchedule() {
-      const list = document.getElementById('coachClassList');
+    // -------------------------------------------------------------
+    // Coach Assigned Workouts
+    // -------------------------------------------------------------
+    function renderCoachWorkouts() {
+      const athlete = getCoachSelectedMember();
+      document.getElementById('coachWorkoutClientLabel').innerText = `Assigning to: ${athlete.name} (${athlete.email})`;
+      const list = document.getElementById('coachAssignedWorkoutsList');
       list.innerHTML = '';
-      classes.forEach(c => {
-        const full = c.booked >= c.capacity;
+      const workouts = athlete.workouts || [];
+
+      if (workouts.length === 0) {
+        list.innerHTML = `<div class="p-4 text-center text-slate-500 text-xs">No workouts assigned for today yet. Tap "+ Assign Exercise" above!</div>`;
+        return;
+      }
+
+      workouts.forEach((w, idx) => {
         const item = document.createElement('div');
         item.className = "p-3 rounded-2xl bg-[#101422] border border-gymCardBorder flex justify-between items-center text-xs";
         item.innerHTML = `
           <div>
-            <div class="font-bold text-white">${c.name}</div>
-            <div class="text-[10px] text-slate-400 font-mono">${c.time} • ${c.coach} • ${c.room}</div>
+            <div class="font-bold text-white">${w.exercise}</div>
+            <div class="text-[10px] text-slate-400 font-mono">${w.sets} Sets • ${w.reps} Reps • ${w.weight}</div>
+            <span class="text-[9px] font-mono text-gymCyan uppercase font-bold">Target: ${w.muscleGroup || 'Full Body'}</span>
           </div>
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded-full ${full ? 'bg-gymRose/20 text-gymRose border border-gymRose/30' : 'bg-gymEmerald/20 text-gymEmerald border border-gymEmerald/30'}">
-            ${c.booked}/${c.capacity} Booked
-          </span>
+          <button onclick="coachRemoveWorkout('${w.id}')" class="text-slate-500 hover:text-gymRose p-1">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
         `;
         list.appendChild(item);
       });
+    }
+
+    function handleCoachAssignExercise(e) {
+      e.preventDefault();
+      const athlete = getCoachSelectedMember();
+      const exercise = document.getElementById('assignExName').value.trim();
+      const sets = document.getElementById('assignExSets').value;
+      const reps = document.getElementById('assignExReps').value;
+      const weight = document.getElementById('assignExWeight').value;
+      const muscleGroup = document.getElementById('assignExMuscle').value;
+
+      athlete.workouts = athlete.workouts || [];
+      athlete.workouts.push({
+        id: `w_${Date.now()}`,
+        exercise,
+        sets,
+        reps,
+        weight,
+        muscleGroup,
+        completed: false
+      });
+
+      saveState();
+      closeModal('modalAssignWorkout');
+      recordAudit(`Coach assigned exercise (${exercise} - ${muscleGroup}) to ${athlete.name}`);
+      renderCoachWorkouts();
+      showToast(`Assigned ${exercise} to ${athlete.name}'s workout for today!`, 'emerald');
+    }
+
+    function coachRemoveWorkout(workoutId) {
+      const athlete = getCoachSelectedMember();
+      athlete.workouts = (athlete.workouts || []).filter(w => w.id !== workoutId);
+      saveState();
+      renderCoachWorkouts();
+      showToast("Exercise removed from plan.");
+    }
+
+    function handleCoachAddMeal(e) {
+      e.preventDefault();
+      const athlete = getCoachSelectedMember();
+      const name = document.getElementById('addMealName').value;
+      const desc = document.getElementById('addMealDesc').value;
+      const calories = parseInt(document.getElementById('addMealCal').value, 10);
+      const proteinG = parseInt(document.getElementById('addMealProt').value, 10);
+
+      athlete.meals = athlete.meals || [];
+      athlete.meals.push({ id: `m_${Date.now()}`, name, desc, calories, proteinG, completed: false });
+      saveState();
+      closeModal('modalAddMeal');
+      renderCoachProtocol();
+      showToast("Meal added to athlete's diet plan!", 'emerald');
     }
 
     function renderCoachBilling() {
@@ -1522,7 +1787,7 @@
 
       const list = document.getElementById('coachBillingList');
       list.innerHTML = '';
-      members.filter(m => m.approved).forEach(m => {
+      members.filter(m => m.approved && m.role === 'MEMBER').forEach(m => {
         const item = document.createElement('div');
         item.className = "p-3 rounded-2xl bg-[#101422] border border-gymCardBorder flex justify-between items-center text-xs";
         item.innerHTML = `
@@ -1536,6 +1801,13 @@
         `;
         list.appendChild(item);
       });
+    }
+
+    function renewMemberSubscription(id) {
+      members = members.map(m => m.id === id ? { ...m, subscriptionDaysLeft: (m.subscriptionDaysLeft || 0) + 30 } : m);
+      saveState();
+      renderCoachBilling();
+      showToast("Subscription fee processed (+30 days)!", 'emerald');
     }
 
     function renderCoachAudit() {
@@ -1555,208 +1827,7 @@
     function recordAudit(text) {
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       auditLogs.unshift({ time, text });
-      if (activeRole === 'COACH') renderCoachAudit();
-    }
-
-    // -------------------------------------------------------------
-    // Member Portal Navigation & Sub-Screens
-    // -------------------------------------------------------------
-    function switchMemberNavTab(tab) {
-      currentMemberNavTab = tab;
-      ['home', 'workouts', 'diet', 'classes', 'pass', 'analytics'].forEach(t => {
-        const btn = document.getElementById(`navMember${t.charAt(0).toUpperCase() + t.slice(1)}`);
-        const screen = document.getElementById(`member${t.charAt(0).toUpperCase() + t.slice(1)}SubScreen`);
-        if (t === tab) {
-          btn.className = "flex flex-col items-center text-gymCyan text-xs py-1";
-          screen.classList.remove('hidden');
-        } else {
-          btn.className = "flex flex-col items-center text-slate-400 hover:text-white text-xs py-1";
-          screen.classList.add('hidden');
-        }
-      });
-      renderMemberSubScreen(tab);
-    }
-
-    function renderMemberSubScreen(tab) {
-      const member = currentUser || members.find(m => m.id === 'client_alex_01');
-      document.getElementById('memberGreetingName').innerText = member.name;
-      document.getElementById('passAthleteName').innerText = member.name;
-      document.getElementById('passDaysLeft').innerText = `${member.subscriptionDaysLeft || 18} Days Remaining`;
-
-      // Presence state
-      updateGymPresenceUI(member.atGym);
-
-      if (tab === 'workouts') renderMemberWorkouts();
-      else if (tab === 'diet') renderMemberDiet();
-      else if (tab === 'classes') renderMemberClasses();
-      else if (tab === 'analytics') renderMemberAnalytics();
-    }
-
-    function toggleGymPresence() {
-      const member = currentUser || members.find(m => m.id === 'client_alex_01');
-      member.atGym = !member.atGym;
-      saveState();
-      updateGymPresenceUI(member.atGym);
-      recordAudit(`${member.name} ${member.atGym ? 'checked in to facility 📍' : 'checked out from facility.'}`);
-      showToast(member.atGym ? "Checked in! Status: At Gym 📍" : "Checked out successfully.");
-    }
-
-    function updateGymPresenceUI(isAtGym) {
-      const tag = document.getElementById('memberAtGymTag');
-      const btn = document.getElementById('gymPresenceBtn');
-      const txt = document.getElementById('gymPresenceText');
-
-      if (isAtGym) {
-        tag.innerText = "AT GYM 📍";
-        tag.className = "text-[9px] font-mono px-2 py-0.5 rounded-full bg-gymEmerald/20 text-gymEmerald border border-gymEmerald/30 animate-pulse font-bold";
-        btn.className = "w-full py-3 rounded-2xl bg-gymEmerald text-black font-extrabold text-xs shadow-[0_0_15px_rgba(16,185,129,0.5)] flex items-center justify-center space-x-2 transition-all";
-        txt.innerText = "Checked In at Facility 📍 (Tap to Checkout)";
-      } else {
-        tag.innerText = "AWAY";
-        tag.className = "text-[9px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700";
-        btn.className = "w-full py-3 rounded-2xl bg-gymCyan text-black font-extrabold text-xs shadow-[0_0_15px_rgba(0,243,255,0.4)] flex items-center justify-center space-x-2 transition-all";
-        txt.innerText = "Check In: \"I am at the gym\"";
-      }
-    }
-
-    function renderMemberWorkouts() {
-      const member = currentUser || members.find(m => m.id === 'client_alex_01');
-      // PRs
-      const prGrid = document.getElementById('memberPrGrid');
-      prGrid.innerHTML = '';
-      const prs = member.prs || [];
-      if (prs.length === 0) {
-        prGrid.innerHTML = `<div class="col-span-full text-center text-slate-500 text-[10px] py-2">No PRs recorded yet.</div>`;
-      } else {
-        prs.forEach(pr => {
-          const card = document.createElement('div');
-          card.className = "p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-center";
-          card.innerHTML = `
-            <div class="text-[10px] text-slate-400 truncate">${pr.exercise}</div>
-            <div class="text-base font-black text-gymCyan font-mono">${pr.weight} <span class="text-[10px] text-slate-400">kg</span></div>
-            <div class="text-[9px] text-slate-500 font-mono">${pr.reps} reps</div>
-          `;
-          prGrid.appendChild(card);
-        });
-      }
-
-      // Workouts
-      const list = document.getElementById('memberWorkoutChecklist');
-      list.innerHTML = '';
-      const workouts = member.workouts || [];
-      const completed = workouts.filter(w => w.completed).length;
-      document.getElementById('memberWorkoutProgressText').innerText = `${completed} / ${workouts.length} Done`;
-
-      workouts.forEach(w => {
-        const item = document.createElement('div');
-        item.className = `p-2.5 rounded-xl border flex items-center justify-between text-xs ${w.completed ? 'bg-gymCyan/5 border-gymCyan/30' : 'bg-slate-900/80 border-slate-800'}`;
-        item.innerHTML = `
-          <div class="flex items-center space-x-2.5">
-            <button onclick="toggleWorkoutItem('${w.id}')" class="w-5 h-5 rounded-md flex items-center justify-center border ${w.completed ? 'bg-gymCyan border-gymCyan text-black' : 'border-slate-700 hover:border-gymCyan text-transparent'}">
-              <i class="fa-solid fa-check text-[10px]"></i>
-            </button>
-            <div>
-              <div class="font-bold text-xs ${w.completed ? 'line-through text-slate-400' : 'text-white'}">${w.exercise}</div>
-              <div class="text-[10px] text-slate-500 font-mono">${w.sets} Sets • ${w.reps} Reps • ${w.weight}</div>
-            </div>
-          </div>
-          <span class="text-[9px] font-mono ${w.completed ? 'text-gymCyan' : 'text-slate-500'}">${w.completed ? 'DONE' : 'PENDING'}</span>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    function toggleWorkoutItem(id) {
-      const member = currentUser || members.find(m => m.id === 'client_alex_01');
-      member.workouts = (member.workouts || []).map(w => w.id === id ? { ...w, completed: !w.completed } : w);
-      saveState();
-      renderMemberWorkouts();
-      showToast("Training progress updated!");
-    }
-
-    function renderMemberDiet() {
-      const member = currentUser || members.find(m => m.id === 'client_alex_01');
-      const list = document.getElementById('memberMealsList');
-      list.innerHTML = '';
-      (member.meals || []).forEach(m => {
-        const item = document.createElement('div');
-        item.className = `p-3 rounded-2xl border flex items-center justify-between text-xs ${m.completed ? 'bg-gymEmerald/5 border-gymEmerald/30' : 'bg-[#101422] border-gymCardBorder'}`;
-        item.innerHTML = `
-          <div class="flex items-center space-x-3">
-            <button onclick="toggleMealItem('${m.id}')" class="w-5 h-5 rounded-md flex items-center justify-center border ${m.completed ? 'bg-gymEmerald border-gymEmerald text-black' : 'border-slate-700 hover:border-gymEmerald text-transparent'}">
-              <i class="fa-solid fa-check text-[10px]"></i>
-            </button>
-            <div>
-              <div class="font-bold text-xs ${m.completed ? 'line-through text-slate-400' : 'text-white'}">${m.name}</div>
-              <div class="text-[10px] text-slate-400">${m.desc}</div>
-            </div>
-          </div>
-          <span class="text-[9px] font-mono ${m.completed ? 'text-gymEmerald' : 'text-slate-500'}">${m.completed ? 'CONSUMED' : 'PENDING'}</span>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    function toggleMealItem(id) {
-      const member = currentUser || members.find(m => m.id === 'client_alex_01');
-      member.meals = (member.meals || []).map(m => m.id === id ? { ...m, completed: !m.completed } : m);
-      saveState();
-      renderMemberDiet();
-      showToast("Meal consumption logged!");
-    }
-
-    function renderMemberClasses() {
-      const list = document.getElementById('memberBookingClassList');
-      list.innerHTML = '';
-      classes.forEach(c => {
-        const full = c.booked >= c.capacity;
-        const item = document.createElement('div');
-        item.className = "p-3 rounded-2xl bg-[#101422] border border-gymCardBorder flex justify-between items-center text-xs";
-        item.innerHTML = `
-          <div>
-            <div class="font-bold text-white">${c.name}</div>
-            <div class="text-[10px] text-slate-400 font-mono">${c.time} • ${c.coach}</div>
-            <div class="text-[9px] text-gymCyan font-mono">${c.booked}/${c.capacity} spots reserved</div>
-          </div>
-          <button onclick="bookMemberClass('${c.id}')" ${full ? 'disabled' : ''} class="px-3 py-1.5 rounded-xl font-bold text-xs ${full ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-gymCyan text-black hover:bg-cyan-300'} transition">
-            ${full ? 'Full' : 'Book Spot'}
-          </button>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    function bookMemberClass(id) {
-      classes = classes.map(c => c.id === id && c.booked < c.capacity ? { ...c, booked: c.booked + 1 } : c);
-      saveState();
-      renderMemberClasses();
-      recordAudit(`${currentUser?.name || 'Athlete'} booked group class (${id})`);
-      showToast("Class reservation confirmed!", 'emerald');
-    }
-
-    function renderMemberAnalytics() {
-      const member = currentUser || members.find(m => m.id === 'client_alex_01');
-      const wt = member.currentWeight || 75;
-      const ht = member.heightCm || 178;
-      const htM = ht / 100;
-      const bmi = (wt / (htM * htM)).toFixed(1);
-      document.getElementById('analyticsBmiVal').innerText = `BMI ${bmi}`;
-      document.getElementById('analyticsWeightVal').innerText = `${wt} kg`;
-
-      const cat = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese';
-      const catEl = document.getElementById('analyticsBmiCat');
-      catEl.innerText = cat;
-      catEl.className = `text-xs font-bold px-3 py-1 rounded-full ${bmi < 25 ? 'bg-gymEmerald/20 text-gymEmerald border border-gymEmerald/40' : 'bg-gymAmber/20 text-gymAmber border border-gymAmber/40'}`;
-    }
-
-    // -------------------------------------------------------------
-    // Modal Helpers
-    // -------------------------------------------------------------
-    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-    function toggleShowcaseModal() {
-      const m = document.getElementById('modalShowcase');
-      m.classList.toggle('hidden');
+      if (currentUser?.role === 'COACH') renderCoachAudit();
     }
 
     function handleCoachAddMember(e) {
@@ -1782,6 +1853,7 @@
         proteinG: 170,
         carbsG: 200,
         fatG: 65,
+        waterIntakeMl: 0,
         subscriptionDaysLeft: 30,
         prs: [],
         workouts: [],
@@ -1789,51 +1861,312 @@
       });
       saveState();
       closeModal('modalAddMember');
-      recordAudit(`Coach added athlete: ${name}`);
+      recordAudit(`Coach created athlete account: ${name}`);
       renderCoachRoster();
-      showToast(`Member profile created for ${name}!`, 'emerald');
+      showToast(`Athlete profile created for ${name}!`, 'emerald');
+    }
+
+    // -------------------------------------------------------------
+    // Member Portal Operations (Strictly Own Account Only)
+    // -------------------------------------------------------------
+    function switchMemberNavTab(tab) {
+      currentMemberNavTab = tab;
+      ['home', 'workouts', 'diet', 'pass', 'analytics'].forEach(t => {
+        const btn = document.getElementById(`navMember${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        const screen = document.getElementById(`member${t.charAt(0).toUpperCase() + t.slice(1)}SubScreen`);
+        if (t === tab) {
+          btn.className = "flex flex-col items-center text-gymCyan text-xs py-1";
+          screen.classList.remove('hidden');
+        } else {
+          btn.className = "flex flex-col items-center text-slate-400 hover:text-white text-xs py-1";
+          screen.classList.add('hidden');
+        }
+      });
+      renderMemberSubScreen(tab);
+    }
+
+    function renderMemberSubScreen(tab) {
+      document.getElementById('memberGreetingName').innerText = currentUser.name;
+      document.getElementById('passAthleteName').innerText = currentUser.name;
+      document.getElementById('passDaysLeft').innerText = `${currentUser.subscriptionDaysLeft || 18} Days Remaining`;
+      document.getElementById('homeCalorieBadge').innerText = `${currentUser.dailyCalories || 2100} kcal Target`;
+
+      updateGymPresenceUI(currentUser.atGym);
+      renderWaterTracker();
+
+      if (tab === 'home') renderMemberHome();
+      else if (tab === 'workouts') renderMemberWorkouts();
+      else if (tab === 'diet') renderMemberDiet();
+      else if (tab === 'analytics') renderMemberAnalytics();
+    }
+
+    function renderMemberHome() {
+      // Home preview of meals
+      const list = document.getElementById('homeMealsPreviewList');
+      list.innerHTML = '';
+      const meals = currentUser.meals || [];
+      if (meals.length === 0) {
+        list.innerHTML = `<div class="text-[10px] text-slate-500 py-2">No meals assigned yet by coach.</div>`;
+      } else {
+        meals.slice(0, 3).forEach(m => {
+          const item = document.createElement('div');
+          item.className = "p-2 rounded-xl bg-slate-900 border border-slate-800 flex justify-between items-center text-xs";
+          item.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <span class="${m.completed ? 'text-gymEmerald' : 'text-slate-500'}">
+                <i class="fa-solid fa-circle-check text-xs"></i>
+              </span>
+              <span class="${m.completed ? 'line-through text-slate-400' : 'text-white'} text-[11px] font-bold">${m.name}</span>
+            </div>
+            <span class="text-[10px] text-gymCyan font-mono">${m.calories} kcal</span>
+          `;
+          list.appendChild(item);
+        });
+      }
+    }
+
+    // Water Tracker logic
+    function addWater(amount) {
+      currentUser.waterIntakeMl = (currentUser.waterIntakeMl || 0) + amount;
+      saveState();
+      renderWaterTracker();
+      showToast(`Logged +${amount}ml water! Stay hydrated 💧`, 'cyan');
+    }
+
+    function resetWater() {
+      currentUser.waterIntakeMl = 0;
+      saveState();
+      renderWaterTracker();
+      showToast("Daily water intake reset.", 'amber');
+    }
+
+    function renderWaterTracker() {
+      const current = currentUser.waterIntakeMl || 0;
+      const target = 3000;
+      const pct = Math.min(100, Math.round((current / target) * 100));
+      const glasses = Math.round(current / 250);
+
+      document.getElementById('waterAmountText').innerText = current.toLocaleString();
+      document.getElementById('waterProgressBar').style.width = `${pct}%`;
+      document.getElementById('waterPercentageText').innerText = `${pct}%`;
+      document.getElementById('waterGlassesText').innerText = `${glasses} of 12 glasses logged`;
+    }
+
+    function toggleGymPresence() {
+      currentUser.atGym = !currentUser.atGym;
+      saveState();
+      updateGymPresenceUI(currentUser.atGym);
+      recordAudit(`${currentUser.name} ${currentUser.atGym ? 'checked in to facility 📍' : 'checked out from facility.'}`);
+      showToast(currentUser.atGym ? "Checked In at Facility 📍" : "Checked Out.");
+    }
+
+    function updateGymPresenceUI(isAtGym) {
+      const tag = document.getElementById('memberAtGymTag');
+      const btn = document.getElementById('gymPresenceBtn');
+      const txt = document.getElementById('gymPresenceText');
+
+      if (isAtGym) {
+        tag.innerText = "AT GYM 📍";
+        tag.className = "text-[9px] font-mono px-2 py-0.5 rounded-full bg-gymEmerald/20 text-gymEmerald border border-gymEmerald/30 animate-pulse font-bold";
+        btn.className = "w-full py-3 rounded-2xl bg-gymEmerald text-black font-extrabold text-xs shadow-[0_0_15px_rgba(16,185,129,0.5)] flex items-center justify-center space-x-2 transition-all";
+        txt.innerText = "Checked In at Facility 📍 (Tap to Checkout)";
+      } else {
+        tag.innerText = "AWAY";
+        tag.className = "text-[9px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700";
+        btn.className = "w-full py-3 rounded-2xl bg-gymCyan text-black font-extrabold text-xs shadow-[0_0_15px_rgba(0,243,255,0.4)] flex items-center justify-center space-x-2 transition-all";
+        txt.innerText = "Check In: \"I am at the gym\"";
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Workouts & Glowing Muscle Anatomy
+    // -------------------------------------------------------------
+    function renderMemberWorkouts() {
+      // 1. Workouts Checklist
+      const list = document.getElementById('memberWorkoutChecklist');
+      list.innerHTML = '';
+      const workouts = currentUser.workouts || [];
+      const completedCount = workouts.filter(w => w.completed).length;
+      document.getElementById('memberWorkoutProgressText').innerText = `${completedCount} / ${workouts.length} Completed`;
+
+      workouts.forEach(w => {
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-2xl border flex items-center justify-between text-xs transition-all ${w.completed ? 'bg-gymCyan/10 border-gymCyan/40' : 'bg-[#101422] border-gymCardBorder'}`;
+        item.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <button onclick="toggleWorkoutComplete('${w.id}')" class="w-6 h-6 rounded-lg flex items-center justify-center border transition ${w.completed ? 'bg-gymCyan border-gymCyan text-black' : 'border-slate-700 hover:border-gymCyan text-transparent'}">
+              <i class="fa-solid fa-check text-xs"></i>
+            </button>
+            <div>
+              <div class="font-bold text-xs ${w.completed ? 'line-through text-slate-400' : 'text-white'}">${w.exercise}</div>
+              <div class="text-[10px] text-slate-400 font-mono">${w.sets} Sets • ${w.reps} Reps • ${w.weight}</div>
+              <span class="text-[9px] font-mono text-gymCyan uppercase font-bold">Activates: ${w.muscleGroup}</span>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono ${w.completed ? 'text-gymCyan font-bold' : 'text-slate-500'}">
+            ${w.completed ? 'ACTIVATED' : 'PENDING'}
+          </span>
+        `;
+        list.appendChild(item);
+      });
+
+      // 2. Personal Records Grid
+      const prGrid = document.getElementById('memberPrGrid');
+      prGrid.innerHTML = '';
+      (currentUser.prs || []).forEach(pr => {
+        const card = document.createElement('div');
+        card.className = "p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-center";
+        card.innerHTML = `
+          <div class="text-[10px] text-slate-400 truncate">${pr.exercise}</div>
+          <div class="text-base font-black text-gymCyan font-mono">${pr.weight} <span class="text-[10px] text-slate-400">kg</span></div>
+          <div class="text-[9px] text-slate-500 font-mono">${pr.reps} reps • ${pr.date}</div>
+        `;
+        prGrid.appendChild(card);
+      });
+
+      // 3. Update Muscle Anatomy Highlights
+      updateMuscleAnatomy();
+    }
+
+    function toggleWorkoutComplete(id) {
+      currentUser.workouts = (currentUser.workouts || []).map(w => w.id === id ? { ...w, completed: !w.completed } : w);
+      saveState();
+      renderMemberWorkouts();
+      showToast("Exercise recorded! Muscle anatomy updated ⚡", 'cyan');
+    }
+
+    function updateMuscleAnatomy() {
+      // Find all completed muscle groups
+      const completedMuscles = new Set();
+      (currentUser.workouts || []).filter(w => w.completed).forEach(w => {
+        if (w.muscleGroup) completedMuscles.add(w.muscleGroup.toLowerCase());
+      });
+
+      const muscleMap = {
+        'chest': ['muscle_chest_l', 'muscle_chest_r'],
+        'triceps': ['muscle_triceps_l', 'muscle_triceps_r'],
+        'biceps': ['muscle_biceps_l', 'muscle_biceps_r'],
+        'shoulders': ['muscle_shoulders_l', 'muscle_shoulders_r'],
+        'back': ['muscle_back_l', 'muscle_back_r'],
+        'quads': ['muscle_quads_l', 'muscle_quads_r'],
+        'core': ['muscle_core'],
+        'glutes': ['muscle_glutes'],
+        'calves': ['muscle_calves_l', 'muscle_calves_r']
+      };
+
+      // Reset all parts
+      Object.values(muscleMap).flat().forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = "muscle-part inactive";
+      });
+
+      // Highlight active muscles
+      const chipsContainer = document.getElementById('muscleChipsList');
+      chipsContainer.innerHTML = '';
+
+      if (completedMuscles.size === 0) {
+        document.getElementById('activeMuscleCountBadge').innerText = "0 Zones Active";
+        chipsContainer.innerHTML = `<span class="text-[9px] text-slate-500 font-mono">No muscle groups activated today yet. Check off an exercise!</span>`;
+        return;
+      }
+
+      document.getElementById('activeMuscleCountBadge').innerText = `${completedMuscles.size} Zones Active`;
+
+      completedMuscles.forEach(muscle => {
+        const svgIds = muscleMap[muscle] || [];
+        svgIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.className = "muscle-part active";
+        });
+
+        const chip = document.createElement('span');
+        chip.className = "px-2 py-0.5 rounded-full bg-gymCyan/20 text-gymCyan border border-gymCyan/40 font-bold uppercase";
+        chip.innerText = `${muscle} Active`;
+        chipsContainer.appendChild(chip);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // Member Diet Plan Checkoff
+    // -------------------------------------------------------------
+    function renderMemberDiet() {
+      const list = document.getElementById('memberMealsList');
+      list.innerHTML = '';
+      const meals = currentUser.meals || [];
+
+      if (meals.length === 0) {
+        list.innerHTML = `<div class="p-6 text-center text-slate-500 text-xs">No diet plan assigned yet. Ask Coach Marcus to run AI Nutrition analysis!</div>`;
+        return;
+      }
+
+      meals.forEach(m => {
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-2xl border flex items-center justify-between text-xs transition-all ${m.completed ? 'bg-gymEmerald/10 border-gymEmerald/40' : 'bg-[#101422] border-gymCardBorder'}`;
+        item.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <button onclick="toggleMealItem('${m.id}')" class="w-6 h-6 rounded-lg flex items-center justify-center border transition ${m.completed ? 'bg-gymEmerald border-gymEmerald text-black' : 'border-slate-700 hover:border-gymEmerald text-transparent'}">
+              <i class="fa-solid fa-check text-xs"></i>
+            </button>
+            <div>
+              <div class="font-bold text-xs ${m.completed ? 'line-through text-slate-400' : 'text-white'}">${m.name}</div>
+              <div class="text-[10px] text-slate-400">${m.desc}</div>
+              <div class="text-[9px] text-gymCyan font-mono font-bold">${m.calories} kcal • ${m.proteinG}g Protein</div>
+            </div>
+          </div>
+          <span class="text-[9px] font-mono ${m.completed ? 'text-gymEmerald font-bold' : 'text-slate-500'}">
+            ${m.completed ? 'CONSUMED' : 'PENDING'}
+          </span>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function toggleMealItem(id) {
+      currentUser.meals = (currentUser.meals || []).map(m => m.id === id ? { ...m, completed: !m.completed } : m);
+      saveState();
+      renderMemberDiet();
+      showToast("Meal consumption logged!", 'emerald');
+    }
+
+    function renderMemberAnalytics() {
+      const wt = currentUser.currentWeight || 75;
+      const ht = currentUser.heightCm || 178;
+      const htM = ht / 100;
+      const bmi = (wt / (htM * htM)).toFixed(1);
+      document.getElementById('analyticsBmiVal').innerText = `BMI ${bmi}`;
+      document.getElementById('analyticsWeightVal').innerText = `${wt} kg`;
+      document.getElementById('analyticsHeightVal').innerText = `${ht} cm`;
+
+      const cat = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese';
+      const catEl = document.getElementById('analyticsBmiCat');
+      catEl.innerText = cat;
+      catEl.className = `text-xs font-bold px-3 py-1 rounded-full ${bmi < 25 ? 'bg-gymEmerald/20 text-gymEmerald border border-gymEmerald/40' : 'bg-gymAmber/20 text-gymAmber border border-gymAmber/40'}`;
     }
 
     function handleMemberLogPr(e) {
       e.preventDefault();
-      const exercise = document.getElementById('logPrExercise').value;
+      const exercise = document.getElementById('logPrExercise').value.trim();
       const weight = parseFloat(document.getElementById('logPrWeight').value);
       const reps = parseInt(document.getElementById('logPrReps').value, 10);
-      const member = currentUser || members.find(m => m.id === 'client_alex_01');
 
-      member.prs = member.prs || [];
-      member.prs.unshift({ exercise, weight, reps, date: 'Today' });
+      currentUser.prs = currentUser.prs || [];
+      currentUser.prs.unshift({ exercise, weight, reps, date: 'Today' });
       saveState();
       closeModal('modalLogPr');
       renderMemberWorkouts();
-      recordAudit(`${member.name} logged new PR: ${exercise} ${weight}kg (${reps} reps)`);
-      showToast(`Personal Record Saved: ${exercise} ${weight}kg!`, 'emerald');
+      recordAudit(`${currentUser.name} logged PR: ${exercise} ${weight}kg (${reps} reps)`);
+      showToast(`Personal Best Saved: ${exercise} ${weight}kg!`, 'emerald');
     }
 
-    function handleCreateClass(e) {
-      e.preventDefault();
-      const name = document.getElementById('newClassName').value;
-      const time = document.getElementById('newClassTime').value;
-      const capacity = parseInt(document.getElementById('newClassCapacity').value, 10);
-
-      classes.push({
-        id: `c_${Date.now()}`,
-        name,
-        time,
-        coach: currentUser?.name || 'Head Coach',
-        capacity,
-        booked: 0,
-        room: 'Main Studio'
-      });
-      saveState();
-      closeModal('modalAddClass');
-      renderCoachSchedule();
-      recordAudit(`Created new group class: ${name} (${time})`);
-      showToast("Class published to automated timetable!", 'emerald');
-    }
+    // -------------------------------------------------------------
+    // Modal Helpers
+    // -------------------------------------------------------------
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function toggleShowcaseModal() { document.getElementById('modalShowcase').classList.toggle('hidden'); }
 
     function triggerApkDownload() {
-      const dummy = "IronPulse Android Application Package - Universal Build (Android 6.0 to 16)";
+      const dummy = "IronPulse Android Application Package - Created with Google AI Studio";
       const blob = new Blob([dummy], { type: 'application/vnd.android.package-archive' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1843,17 +2176,12 @@
       a.click();
       window.URL.revokeObjectURL(url);
       toggleShowcaseModal();
-      showToast("Universal APK package downloaded!", 'emerald');
+      showToast("Universal APK downloaded!", 'emerald');
     }
 
-    // -------------------------------------------------------------
-    // Initializer
-    // -------------------------------------------------------------
+    // Init
     window.addEventListener('DOMContentLoaded', () => {
       triggerIntroAnimation();
-      // Start at Sign In Portal (Auth screen)
-      hideAllScreens();
-      document.getElementById('screenAuth').classList.remove('hidden');
     });
   </script>
 </body>

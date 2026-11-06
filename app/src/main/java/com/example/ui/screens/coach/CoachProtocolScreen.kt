@@ -21,7 +21,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Tune
@@ -79,6 +81,9 @@ fun CoachProtocolScreen(
     onOpenAddMeal: () -> Unit,
     onOpenAddWorkout: () -> Unit,
     onOpenAiGen: () -> Unit,
+    onOpenAiMealAnalyzer: () -> Unit = {},
+    onOpenAssignWorkout: () -> Unit = {},
+    onOpenEditProfile: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     if (member == null) {
@@ -126,19 +131,51 @@ fun CoachProtocolScreen(
                             Text(member.name, fontSize = 16.sp, fontWeight = FontWeight.Black, color = TextPrimary)
                             Text("${member.email} • ${member.membershipTier}", fontSize = 10.sp, color = TextMuted)
                         }
-                        Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = GymIndigo.copy(alpha = 0.2f),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, GymIndigo.copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .testTag("coach_ai_plan_button")
-                                .clickable { onOpenAiGen() }
-                                .padding(horizontal = 10.dp, vertical = 6.dp)
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = GymIndigo, modifier = Modifier.size(13.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("AI Generator", fontSize = 10.sp, fontWeight = FontWeight.Black, color = GymIndigo)
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = GymSurfaceVariant,
+                                border = androidx.compose.foundation.BorderStroke(1.dp, GymCardBorder),
+                                modifier = Modifier
+                                    .testTag("coach_edit_profile_btn")
+                                    .clickable { onOpenEditProfile() }
+                                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Edit, contentDescription = null, tint = GymCyan, modifier = Modifier.size(12.dp))
+                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Text("Edit Details", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                                }
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = GymEmerald.copy(alpha = 0.15f),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, GymEmerald.copy(alpha = 0.4f)),
+                                modifier = Modifier
+                                    .testTag("coach_ai_meal_analyzer_button")
+                                    .clickable { onOpenAiMealAnalyzer() }
+                                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = GymEmerald, modifier = Modifier.size(12.dp))
+                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Text("AI Nutrition", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = GymEmerald)
+                                }
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = GymIndigo.copy(alpha = 0.2f),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, GymIndigo.copy(alpha = 0.5f)),
+                                modifier = Modifier
+                                    .testTag("coach_ai_plan_button")
+                                    .clickable { onOpenAiGen() }
+                                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = GymIndigo, modifier = Modifier.size(12.dp))
+                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Text("Smart Gen", fontSize = 9.sp, fontWeight = FontWeight.Black, color = GymIndigo)
+                                }
                             }
                         }
                     }
@@ -377,18 +414,34 @@ fun CoachProtocolScreen(
                             Spacer(modifier = Modifier.width(6.dp))
                             Text("WORKOUT PROTOCOL", fontSize = 11.sp, fontWeight = FontWeight.Black, color = TextPrimary)
                         }
-                        Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = GymCyan.copy(alpha = 0.2f),
-                            modifier = Modifier
-                                .testTag("coach_add_workout_button")
-                                .clickable { onOpenAddWorkout() }
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Add, contentDescription = null, tint = GymCyan, modifier = Modifier.size(12.dp))
-                                Spacer(modifier = Modifier.width(2.dp))
-                                Text("Add Routine", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = GymCyan)
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = GymEmerald.copy(alpha = 0.2f),
+                                modifier = Modifier
+                                    .testTag("coach_assign_workout_button")
+                                    .clickable { onOpenAssignWorkout() }
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Bolt, contentDescription = null, tint = GymEmerald, modifier = Modifier.size(12.dp))
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text("Assign Workout", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = GymEmerald)
+                                }
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = GymCyan.copy(alpha = 0.2f),
+                                modifier = Modifier
+                                    .testTag("coach_add_workout_button")
+                                    .clickable { onOpenAddWorkout() }
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Add, contentDescription = null, tint = GymCyan, modifier = Modifier.size(12.dp))
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text("Add Routine", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = GymCyan)
+                                }
                             }
                         }
                     }
@@ -396,7 +449,7 @@ fun CoachProtocolScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     if (workouts.isEmpty()) {
-                        Text("No exercises prescribed yet. Tap '+ Add Routine' or use 'AI Generator'.", color = TextMuted, fontSize = 10.sp)
+                        Text("No exercises prescribed yet. Tap '+ Assign Workout' or use 'AI Generator'.", color = TextMuted, fontSize = 10.sp)
                     } else {
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             workouts.forEach { ex ->
@@ -411,7 +464,22 @@ fun CoachProtocolScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Column(modifier = Modifier.weight(1f)) {
-                                            Text(ex.exercise, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text(ex.exercise, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Surface(
+                                                    shape = RoundedCornerShape(4.dp),
+                                                    color = GymCyan.copy(alpha = 0.15f)
+                                                ) {
+                                                    Text(
+                                                        text = ex.muscleGroup.uppercase(),
+                                                        fontSize = 8.sp,
+                                                        fontWeight = FontWeight.Black,
+                                                        color = GymCyan,
+                                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                                    )
+                                                }
+                                            }
                                             Text(
                                                 "${ex.sets} sets × ${ex.reps} reps • ${ex.weight}",
                                                 fontSize = 9.sp,

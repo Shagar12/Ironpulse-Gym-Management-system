@@ -175,22 +175,22 @@ class GymRepository(private val gymDao: GymDao) {
 
         // Seed Workouts
         val workouts = listOf(
-            WorkoutExerciseEntity("w_alex_1", "client_alex_01", "Incline Barbell Press", "4", "8-10", "75kg", true),
-            WorkoutExerciseEntity("w_alex_2", "client_alex_01", "Dumbbell Incline Flyes", "3", "12-15", "18kg", true),
-            WorkoutExerciseEntity("w_alex_3", "client_alex_01", "Weighted Tricep Dips", "4", "10", "15kg", false),
-            WorkoutExerciseEntity("w_alex_4", "client_alex_01", "Cable Rope Pushdowns", "3", "15", "25kg", false),
+            WorkoutExerciseEntity("w_alex_1", "client_alex_01", "Incline Barbell Press", "4", "8-10", "75kg", "chest", true),
+            WorkoutExerciseEntity("w_alex_2", "client_alex_01", "Dumbbell Incline Flyes", "3", "12-15", "18kg", "chest", true),
+            WorkoutExerciseEntity("w_alex_3", "client_alex_01", "Weighted Tricep Dips", "4", "10", "15kg", "triceps", false),
+            WorkoutExerciseEntity("w_alex_4", "client_alex_01", "Cable Rope Pushdowns", "3", "15", "25kg", "triceps", false),
 
-            WorkoutExerciseEntity("w_sarah_1", "client_sarah_02", "Barbell Back Squat", "4", "6-8", "65kg", true),
-            WorkoutExerciseEntity("w_sarah_2", "client_sarah_02", "Romanian Deadlifts", "4", "8-10", "70kg", true),
-            WorkoutExerciseEntity("w_sarah_3", "client_sarah_02", "Bulgarian Split Squats", "3", "12/leg", "14kg", false),
+            WorkoutExerciseEntity("w_sarah_1", "client_sarah_02", "Barbell Back Squat", "4", "6-8", "65kg", "quads", true),
+            WorkoutExerciseEntity("w_sarah_2", "client_sarah_02", "Romanian Deadlifts", "4", "8-10", "70kg", "glutes", true),
+            WorkoutExerciseEntity("w_sarah_3", "client_sarah_02", "Bulgarian Split Squats", "3", "12/leg", "14kg", "quads", false),
 
-            WorkoutExerciseEntity("w_mike_1", "client_mike_03", "Bodyweight Pushups", "3", "10", "Bodyweight", false),
-            WorkoutExerciseEntity("w_mike_2", "client_mike_03", "Goblet Squats", "3", "12", "12kg", false),
-            WorkoutExerciseEntity("w_mike_3", "client_mike_03", "Lat Pulldowns", "3", "12", "40kg", false),
+            WorkoutExerciseEntity("w_mike_1", "client_mike_03", "Bodyweight Pushups", "3", "10", "Bodyweight", "chest", false),
+            WorkoutExerciseEntity("w_mike_2", "client_mike_03", "Goblet Squats", "3", "12", "12kg", "quads", false),
+            WorkoutExerciseEntity("w_mike_3", "client_mike_03", "Lat Pulldowns", "3", "12", "40kg", "back", false),
 
-            WorkoutExerciseEntity("w_marcus_1", "client_marcus_04", "Conventional Deadlift", "5", "5", "180kg", true),
-            WorkoutExerciseEntity("w_marcus_2", "client_marcus_04", "Standing Overhead Press", "4", "6", "80kg", true),
-            WorkoutExerciseEntity("w_marcus_3", "client_marcus_04", "Barbell Bent-Over Row", "4", "8", "110kg", false)
+            WorkoutExerciseEntity("w_marcus_1", "client_marcus_04", "Conventional Deadlift", "5", "5", "180kg", "back", true),
+            WorkoutExerciseEntity("w_marcus_2", "client_marcus_04", "Standing Overhead Press", "4", "6", "80kg", "shoulders", true),
+            WorkoutExerciseEntity("w_marcus_3", "client_marcus_04", "Barbell Bent-Over Row", "4", "8", "110kg", "back", false)
         )
         gymDao.insertWorkouts(workouts)
 
@@ -644,14 +644,89 @@ class GymRepository(private val gymDao: GymDao) {
         gymDao.deleteWorkoutsForMember(memberId)
         val squatExercise = if (challengeLevel == "Beginner") "Dumbbell Goblet Squat" else "Barbell Back Squat"
         val newWorkouts = listOf(
-            WorkoutExerciseEntity("ai_w1_${System.currentTimeMillis()}", memberId, squatExercise, "4", if (phase == "Bulking") "6-8" else "10-12", "Progressive", false),
-            WorkoutExerciseEntity("ai_w2_${System.currentTimeMillis()}", memberId, "Incline Dumbbell Press", "4", "8-10", "Moderate-Heavy", false),
-            WorkoutExerciseEntity("ai_w3_${System.currentTimeMillis()}", memberId, "Cable Lat Pulldowns", "3", "12", "Moderate", false),
-            WorkoutExerciseEntity("ai_w4_${System.currentTimeMillis()}", memberId, "High-Intensity Core Circuit", "3", "15-20", "Bodyweight", false)
+            WorkoutExerciseEntity("ai_w1_${System.currentTimeMillis()}", memberId, squatExercise, "4", if (phase == "Bulking") "6-8" else "10-12", "Progressive", "quads", false),
+            WorkoutExerciseEntity("ai_w2_${System.currentTimeMillis()}", memberId, "Incline Dumbbell Press", "4", "8-10", "Moderate-Heavy", "chest", false),
+            WorkoutExerciseEntity("ai_w3_${System.currentTimeMillis()}", memberId, "Cable Lat Pulldowns", "3", "12", "Moderate", "back", false),
+            WorkoutExerciseEntity("ai_w4_${System.currentTimeMillis()}", memberId, "High-Intensity Core Circuit", "3", "15-20", "Bodyweight", "core", false)
         )
         gymDao.insertWorkouts(newWorkouts)
 
         addAuditLog("Smart Protocol Generator generated custom $phase ($challengeLevel) diet & training plan for ${member.name}.", "coach")
+    }
+
+    suspend fun updateWaterIntake(memberId: String, waterMl: Int) {
+        gymDao.updateWaterIntake(memberId, waterMl)
+    }
+
+    suspend fun updateMemberProfile(
+        memberId: String,
+        name: String,
+        weight: Double,
+        height: Double,
+        goalPhase: String,
+        challengeLevel: String
+    ) {
+        gymDao.updateMemberProfile(memberId, name, weight, height, goalPhase, challengeLevel)
+        val (cal, prot, carb, fat) = calculateMacrosForPhase(weight, goalPhase)
+        val member = gymDao.getMemberByIdSync(memberId)
+        if (member != null) {
+            gymDao.updateMember(member.copy(
+                name = name,
+                currentWeight = weight,
+                heightCm = height,
+                goalPhase = goalPhase,
+                challengeLevel = challengeLevel,
+                dailyCalories = cal,
+                proteinG = prot,
+                carbsG = carb,
+                fatG = fat
+            ))
+            addAuditLog("Account profile updated for $name ($goalPhase, ${weight}kg).", "coach")
+        }
+    }
+
+    suspend fun assignWorkoutToMember(
+        memberId: String,
+        exercise: String,
+        sets: String,
+        reps: String,
+        weight: String,
+        muscleGroup: String
+    ) {
+        val workout = WorkoutExerciseEntity(
+            id = "w_${System.currentTimeMillis()}",
+            memberId = memberId,
+            exercise = exercise,
+            sets = sets,
+            reps = reps,
+            weight = weight,
+            muscleGroup = muscleGroup.lowercase().trim(),
+            isCompleted = false
+        )
+        gymDao.insertWorkout(workout)
+        val member = gymDao.getMemberByIdSync(memberId)
+        val name = member?.name ?: "Athlete"
+        addAuditLog("Coach assigned daily exercise '$exercise' ($muscleGroup) to $name.", "coach")
+    }
+
+    suspend fun sendAiAnalyzedMeals(
+        memberId: String,
+        meals: List<MealEntity>,
+        calories: Int,
+        protein: Int,
+        carbs: Int,
+        fat: Int
+    ) {
+        val member = gymDao.getMemberByIdSync(memberId) ?: return
+        gymDao.deleteMealsForMember(memberId)
+        gymDao.insertMeals(meals)
+        gymDao.updateMember(member.copy(
+            dailyCalories = calories,
+            proteinG = protein,
+            carbsG = carbs,
+            fatG = fat
+        ))
+        addAuditLog("Coach sent AI Analyzed Nutrition Plan (${calories} kcal, ${protein}g P) to ${member.name}.", "coach")
     }
 
     suspend fun addAuditLog(description: String, category: String = "coach") {

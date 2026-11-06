@@ -24,6 +24,7 @@ data class MemberEntity(
     val approved: Boolean,
     val atGym: Boolean,
     val subscriptionDaysLeft: Int,
+    val waterIntakeMl: Int = 1750,
     val membershipTier: String = "Pro Athlete",
     val joinedDate: String = "2026-10-01"
 )
@@ -46,6 +47,7 @@ data class WorkoutExerciseEntity(
     val sets: String,
     val reps: String,
     val weight: String,
+    val muscleGroup: String = "chest",
     val isCompleted: Boolean = false
 )
 

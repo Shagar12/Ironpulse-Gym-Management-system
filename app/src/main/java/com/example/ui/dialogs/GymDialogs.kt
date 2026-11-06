@@ -942,3 +942,418 @@ private fun outlinedFieldColors() = OutlinedTextFieldDefaults.colors(
     unfocusedTextColor = TextPrimary,
     cursorColor = GymCyan
 )
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditProfileDialog(
+    initialName: String,
+    initialWeight: Double,
+    initialHeight: Double,
+    initialGoalPhase: String,
+    initialChallengeLevel: String,
+    onDismiss: () -> Unit,
+    onConfirm: (name: String, weight: Double, height: Double, goalPhase: String, challengeLevel: String) -> Unit
+) {
+    var name by remember { mutableStateOf(initialName) }
+    var weightStr by remember { mutableStateOf(initialWeight.toString()) }
+    var heightStr by remember { mutableStateOf(initialHeight.toString()) }
+    var goalPhase by remember { mutableStateOf(initialGoalPhase) }
+    var challengeLevel by remember { mutableStateOf(initialChallengeLevel) }
+
+    val phases = listOf("Cutting", "Maintaining", "Lean Bulking", "Bulking")
+    val levels = listOf("Beginner", "Intermediate", "Advanced", "Elite")
+
+    var phaseExpanded by remember { mutableStateOf(false) }
+    var levelExpanded by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = GymSurface,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Scale, contentDescription = null, tint = GymCyan)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Edit Account Details", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(
+                    text = "Update athlete biometrics, active goal phase, and workout challenge level.",
+                    color = TextSecondary,
+                    fontSize = 11.sp
+                )
+
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Full Name") },
+                    colors = outlinedFieldColors(),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().testTag("edit_profile_name_input")
+                )
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = weightStr,
+                        onValueChange = { weightStr = it },
+                        label = { Text("Weight (kg)") },
+                        colors = outlinedFieldColors(),
+                        singleLine = true,
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
+                        modifier = Modifier.weight(1f).testTag("edit_profile_weight_input")
+                    )
+                    OutlinedTextField(
+                        value = heightStr,
+                        onValueChange = { heightStr = it },
+                        label = { Text("Height (cm)") },
+                        colors = outlinedFieldColors(),
+                        singleLine = true,
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
+                        modifier = Modifier.weight(1f).testTag("edit_profile_height_input")
+                    )
+                }
+
+                // Goal Phase dropdown
+                ExposedDropdownMenuBox(
+                    expanded = phaseExpanded,
+                    onExpandedChange = { phaseExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = goalPhase,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Goal Phase") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = phaseExpanded) },
+                        colors = outlinedFieldColors(),
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = phaseExpanded,
+                        onDismissRequest = { phaseExpanded = false }
+                    ) {
+                        phases.forEach { p ->
+                            DropdownMenuItem(text = { Text(p) }, onClick = { goalPhase = p; phaseExpanded = false })
+                        }
+                    }
+                }
+
+                // Challenge Level dropdown
+                ExposedDropdownMenuBox(
+                    expanded = levelExpanded,
+                    onExpandedChange = { levelExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = challengeLevel,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Intensity Level") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = levelExpanded) },
+                        colors = outlinedFieldColors(),
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = levelExpanded,
+                        onDismissRequest = { levelExpanded = false }
+                    ) {
+                        levels.forEach { l ->
+                            DropdownMenuItem(text = { Text(l) }, onClick = { challengeLevel = l; levelExpanded = false })
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val w = weightStr.toDoubleOrNull() ?: initialWeight
+                    val h = heightStr.toDoubleOrNull() ?: initialHeight
+                    if (name.isNotBlank()) {
+                        onConfirm(name.trim(), w, h, goalPhase, challengeLevel)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = GymCyan, contentColor = GymDarkBg),
+                modifier = Modifier.testTag("submit_edit_profile_button")
+            ) {
+                Text("Save Changes", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text("Cancel", color = TextSecondary)
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AssignWorkoutDialog(
+    athleteName: String,
+    onDismiss: () -> Unit,
+    onConfirm: (exercise: String, sets: String, reps: String, weight: String, muscleGroup: String) -> Unit
+) {
+    var exercise by remember { mutableStateOf("") }
+    var sets by remember { mutableStateOf("4") }
+    var reps by remember { mutableStateOf("10") }
+    var weight by remember { mutableStateOf("Moderate") }
+    var muscleGroup by remember { mutableStateOf("chest") }
+
+    val muscleGroups = listOf(
+        "chest" to "Chest (Pectorals)",
+        "shoulders" to "Shoulders (Deltoids)",
+        "biceps" to "Biceps (Arms)",
+        "triceps" to "Triceps (Arms)",
+        "back" to "Back (Lats & Traps)",
+        "core" to "Core (Abdominals)",
+        "quads" to "Quads (Quadriceps)",
+        "glutes" to "Glutes & Hamstrings",
+        "calves" to "Calves (Lower Leg)"
+    )
+    var muscleExpanded by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = GymSurface,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.FitnessCenter, contentDescription = null, tint = GymCyan)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Assign Daily Workout", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(
+                    text = "Prescribe an exercise for $athleteName for today. Target muscle will glow in their anatomy map upon completion.",
+                    color = TextSecondary,
+                    fontSize = 11.sp
+                )
+
+                OutlinedTextField(
+                    value = exercise,
+                    onValueChange = { exercise = it },
+                    label = { Text("Exercise Name (e.g. Barbell Bench Press)") },
+                    colors = outlinedFieldColors(),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().testTag("assign_exercise_name_input")
+                )
+
+                // Muscle Group Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = muscleExpanded,
+                    onExpandedChange = { muscleExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = muscleGroups.find { it.first == muscleGroup }?.second ?: muscleGroup,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Target Muscle Group") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = muscleExpanded) },
+                        colors = outlinedFieldColors(),
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = muscleExpanded,
+                        onDismissRequest = { muscleExpanded = false }
+                    ) {
+                        muscleGroups.forEach { (key, label) ->
+                            DropdownMenuItem(text = { Text(label) }, onClick = { muscleGroup = key; muscleExpanded = false })
+                        }
+                    }
+                }
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = sets,
+                        onValueChange = { sets = it },
+                        label = { Text("Sets") },
+                        colors = outlinedFieldColors(),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = reps,
+                        onValueChange = { reps = it },
+                        label = { Text("Reps") },
+                        colors = outlinedFieldColors(),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                OutlinedTextField(
+                    value = weight,
+                    onValueChange = { weight = it },
+                    label = { Text("Prescribed Weight / Load (e.g. 75kg)") },
+                    colors = outlinedFieldColors(),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (exercise.isNotBlank()) {
+                        onConfirm(exercise.trim(), sets.trim(), reps.trim(), weight.trim(), muscleGroup)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = GymCyan, contentColor = GymDarkBg),
+                modifier = Modifier.testTag("submit_assign_workout_button")
+            ) {
+                Text("Assign Workout", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text("Cancel", color = TextSecondary)
+            }
+        }
+    )
+}
+
+@Composable
+fun CoachAiMealAnalyzerDialog(
+    athleteName: String,
+    athleteAge: Int,
+    athleteGender: String,
+    athleteWeight: Double,
+    athleteHeight: Double,
+    athleteGoalPhase: String,
+    onDismiss: () -> Unit,
+    onSendMealsToClient: (meals: List<com.example.data.model.MealEntity>, calories: Int, protein: Int, carbs: Int, fat: Int) -> Unit
+) {
+    val s = if (athleteGender.equals("Female", ignoreCase = true)) -161.0 else 5.0
+    val bmr = (10.0 * athleteWeight) + (6.25 * athleteHeight) - (5.0 * athleteAge) + s
+    val tdee = (bmr * 1.55).toInt()
+
+    val (cal, prot, carb, fat) = com.example.data.repository.GymRepository.calculateMacrosForPhase(athleteWeight, athleteGoalPhase)
+
+    val generatedMeals = listOf(
+        com.example.data.model.MealEntity(
+            id = "ai_m1_${System.currentTimeMillis()}",
+            memberId = "",
+            name = "Smart $athleteGoalPhase Breakfast",
+            description = "4 egg whites + 1 whole egg, 75g oats, cinnamon & berries",
+            time = "08:00 AM",
+            isCompleted = false
+        ),
+        com.example.data.model.MealEntity(
+            id = "ai_m2_${System.currentTimeMillis()}",
+            memberId = "",
+            name = "Midday High-Protein Fuel",
+            description = "200g grilled chicken breast, 180g jasmine rice, steamed broccoli",
+            time = "12:30 PM",
+            isCompleted = false
+        ),
+        com.example.data.model.MealEntity(
+            id = "ai_m3_${System.currentTimeMillis()}",
+            memberId = "",
+            name = "Pre-Workout Anabolic Fuel",
+            description = "1 scoop whey isolate, 1 banana, rice cakes with peanut butter",
+            time = "04:30 PM",
+            isCompleted = false
+        ),
+        com.example.data.model.MealEntity(
+            id = "ai_m4_${System.currentTimeMillis()}",
+            memberId = "",
+            name = "Recovery Dinner",
+            description = "200g wild salmon fillet, baked sweet potato, asparagus",
+            time = "08:00 PM",
+            isCompleted = false
+        )
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = GymSurface,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = GymIndigo)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Coach AI Nutrition Analyzer", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(
+                    text = "AI biometric analysis for $athleteName based on ${athleteWeight}kg BW and $athleteGoalPhase phase.",
+                    color = TextSecondary,
+                    fontSize = 11.sp
+                )
+
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = GymSurfaceVariant,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, GymCardBorder),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("BMR: ${bmr.toInt()} kcal", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                            Text("TDEE: $tdee kcal", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = GymCyan)
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Prescribed: $cal kcal • ${prot}g Protein • ${carb}g Carbs • ${fat}g Fat",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Black,
+                            color = GymEmerald
+                        )
+                    }
+                }
+
+                Text("PRESCRIBED MEALS FOR CLIENT", fontSize = 9.sp, fontWeight = FontWeight.Black, color = TextMuted)
+
+                generatedMeals.forEach { meal ->
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = GymDarkBg.copy(alpha = 0.6f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, GymCardBorder),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text(meal.name, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                                Text(meal.time, fontSize = 9.sp, color = GymCyan)
+                            }
+                            Text(meal.description, fontSize = 9.sp, color = TextSecondary)
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onSendMealsToClient(generatedMeals, cal, prot, carb, fat)
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = GymEmerald, contentColor = GymDarkBg),
+                modifier = Modifier.testTag("send_ai_meals_to_client_button")
+            ) {
+                Text("Send Meals to Client", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text("Cancel", color = TextSecondary)
+            }
+        }
+    )
+}
